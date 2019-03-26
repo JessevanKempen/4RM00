@@ -25,7 +25,7 @@ NPI        = 20;       % number of grid cells in x-direction [-]
 NPJ        = 40;        % number of grid cells in y-direction [-]
 XMAX       = 10.0;       % width of the domain [m]
 YMAX       = 0.2;       % height of the domain [m]
-MAX_ITER   = 100;       % maximum number of outer iterations [-]
+MAX_ITER   = 20;       % maximum number of outer iterations [-]
 U_ITER     = 1;         % number of Newton iterations for u equation [-]
 V_ITER     = 1;         % number of Newton iterations for v equation [-]
 PC_ITER    = 30;       % number of Newton iterations for pc equation [-]
@@ -210,4 +210,25 @@ end
 fclose(velv);
 % end output()
 
+%% Post processing
+figure
+surf(T')
+colorbar
+xlabel('x')
+ylabel('y')
+zlabel('Temp')
+
+figure
+surf(pc')
+colorbar
+xlabel('x')
+ylabel('y')
+zlabel('Pressure')
+
+figure
+surf(u')
+colorbar
+xlabel('x')
+ylabel('y')
+zlabel('horizontal velocity')
 
