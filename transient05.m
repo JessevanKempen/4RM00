@@ -16,15 +16,15 @@ close all
 clc
 %% declare all variables and contants
 % variables
-global x x_u y y_v u v pc T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
-    u_old v_old pc_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2
+global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
+    u_old v_old pc_old p_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2
 % constants
 global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti
 
 NPI        = 20;       % number of grid cells in x-direction [-]
 NPJ        = 40;        % number of grid cells in y-direction [-]
-XMAX       = 10.0;       % width of the domain [m]
-YMAX       = 0.2;       % height of the domain [m]
+XMAX       = 0.5;       % width of the domain [m]
+YMAX       = 0.3;       % height of the domain [m]
 MAX_ITER   = 20;       % maximum number of outer iterations [-]
 U_ITER     = 1;         % number of Newton iterations for u equation [-]
 V_ITER     = 1;         % number of Newton iterations for v equation [-]
@@ -37,7 +37,7 @@ SAVGneeded = 1E-9;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 1.0;      % in flow velocity [m/s]
+U_IN       = 1.0;       % in flow velocity [m/s]
 
 Cmu        = 0.09;
 sigmak     = 1.;
@@ -108,7 +108,8 @@ for time = Dt:Dt:TOTAL_TIME
         
         u_old(3:NPI+1,2:NPJ+1)   = u(3:NPI+1,2:NPJ+1);       
         v_old(2:NPI+1,3:NPJ+1)   = v(2:NPI+1,3:NPJ+1);        
-        pc_old(2:NPI+1,2:NPJ+1)  = pc(2:NPI+1,2:NPJ+1);        
+        pc_old(2:NPI+1,2:NPJ+1)  = pc(2:NPI+1,2:NPJ+1);
+        p_old(2:NPI+1,2:NPJ+1)   = p(2:NPI+1,2:NPJ+1);
         T_old(2:NPI+1,2:NPJ+1)   = T(2:NPI+1,2:NPJ+1);        
         eps_old(2:NPI+1,2:NPJ+1) = eps(2:NPI+1,2:NPJ+1);
         k_old(2:NPI+1,2:NPJ+1)   = k(2:NPI+1,2:NPJ+1);
@@ -219,11 +220,18 @@ ylabel('y')
 zlabel('Temp')
 
 figure
-surf(pc')
+surf(p')
 colorbar
 xlabel('x')
 ylabel('y')
 zlabel('Pressure')
+
+figure
+surf(pc')
+colorbar
+xlabel('x')
+ylabel('y')
+zlabel('Correction of Pressure')
 
 figure
 surf(u')
@@ -231,4 +239,18 @@ colorbar
 xlabel('x')
 ylabel('y')
 zlabel('horizontal velocity')
+
+figure
+quiver(u',v')
+colorbar
+xlabel('x')
+ylabel('y')
+zlabel('velocity')
+
+figure
+surf(eps')
+colorbar
+xlabel('x')
+ylabel('y')
+zlabel('epsilon')
 

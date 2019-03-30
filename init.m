@@ -6,7 +6,7 @@ global NPI NPJ LARGE U_IN XMAX YMAX
 % variables
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
     yplus2 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
-    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old pc_old T_old k_old ...
+    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old ...
     eps_old dudx dudy dvdx dvdy
 
 %% begin: memalloc()
@@ -40,6 +40,7 @@ tw  = zeros(NPI+2,NPJ+2);
 
 u_old  = zeros(NPI+2,NPJ+2);
 v_old  = zeros(NPI+2,NPJ+2);
+p_old = zeros(NPI+2,NPJ+2);
 pc_old = zeros(NPI+2,NPJ+2);
 T_old  = zeros(NPI+2,NPJ+2);
 k_old  = zeros(NPI+2,NPJ+2);
@@ -119,17 +120,18 @@ m_out = 1.;
 
 for i = 1: NPI+2
     for J = 1:NPJ+2
-        u(i,J) = U_IN*1.5*(1.0-(2.0*(y(J)-YMAX/2)/YMAX)^2); % Velocity in x-direction
+        u(i,J) = 1;      %*1.5*(1.0-(2.0*(y(J)-YMAX/2)/YMAX)^2); % Velocity in x-direction
+        v(I,j) = 1;
     end
 end
 
+rho(:,:)   = 1.0;      % Density
 v(:,:)     = 0.;       % Velocity in y-direction
 p(:,:)     = 0.;       % Relative pressure
-T(:,:)     = 273.;     % Temperature
-rho(:,:)   = 1.0;      % Density
+T(:,:)     = 273.;     % Tempety
 mu(:,:)    = 2.E-5;    % Viscosity
 Cp(:,:)    = 1013.;    % J/(K*kg) Heat capacity - assumed constant for this problem
-Gamma = 0.025./Cp; % Thermal conductivity divided by heat capacity
+Gamma = 0.025./Cp;     % Thermal conductivity divided by heat capacity
 k(:,:)     = 1e-3;     % k
 eps(:,:)   = 1e-4;     % epsilon
 uplus(:,:) = 1.;       % uplus
@@ -146,7 +148,7 @@ T_old  = T;  % Temperature old timestep
 eps_old = eps; % epsilon old timestep
 k_old  = k;   % k old timestep
 
-% Setting the relaxation parameters
+% Setting the relaxation parameters (uit literatuur halen Jesse)
 relax_u   = 0.8;            % See eq. 6.36
 relax_v   = relax_u;        % See eq. 6.37
 relax_pc  = 1.1 - relax_u;  % See eq. 6.33

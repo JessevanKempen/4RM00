@@ -6,7 +6,7 @@ function [] = ucoeff()
 global NPI NPJ Dt Cmu
 % variables
 global x x_u y y_v u p mu mueff SP Su F_u F_v d_u relax_u u_old rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx
+    Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx LARGE
 
 
 
@@ -47,7 +47,15 @@ for I = Istart:Iend
         mus = 0.25*(mueff(I-1,J) + mueff(I,J) + mueff(I-1,J-1) + mueff(I,J-1));
         mun = 0.25*(mueff(I-1,J+1) + mueff(I,J+1) + mueff(I-1,J) + mueff(I,J));
         
-        if J==2 || J==NPJ+1
+        % u can be fixed to zero by setting SP to a very large value
+%         if (I == 3 && J > 10) % i = 3 & J > 10
+%             SP(i,J) = -LARGE;
+%         end
+%         if (i == ceil(2*(NPI+1)/5) && J > ceil(2*(NPJ+1)/3)) % i = 9 & J > 28
+%             SP(i,J) = -LARGE;
+%         end
+        
+        if J==2
             if yplus(I,J) < 11.63
                 SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);
             else

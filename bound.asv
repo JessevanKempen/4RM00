@@ -8,26 +8,18 @@ global y u v T m_in m_out y_v F_u k eps
 
 % Fixed temperature/velocity at the upper and lower wall
 % for J = 1:NPJ+2
-%           u(2,1:NPJ+2) = U_IN; % inlet (zijkanten extra op 0 zetten!)
+%           u(2,1:NPJ+2) = U_IN; % inlet (werkt niet???)
 %     u(2,J) = U_IN*1.5*(1.-(2.*(y(J)-YMAX/2.)/YMAX)^2); % inlet
 % end
 
-u(2,2:13) = U_IN*1.5; %entering uniform x velocity
-%v(1,NPJ+2) = 0;        %entering y velocity = 0
-%v(2,1:NPJ+2) = 0;        %entering y velocity = 0
+u(2,2:(ceil((NPJ+2)/3)-1)) = 1.5*U_IN; %entering uniform x velocity
+%v(2,2:(ceil((NPJ+2)/3)-1)) = 0;        %entering y velocity = 0
 
-
-u(2,14) = 0;                           % upper block enter wall
+u(2,ceil((NPJ+2)/3)) = 0;              % upper block enter wall
 u(2, 1) = 0;                           % low block enter wall
-u(3, 14:NPJ+2) = 0;                    % left wall ceil((NPJ+2)/3)
-u(1:NPI+2, 1) = 0;                     % bottom wall
-u(NPI+2, 1:NPJ+2) = 0;                 % right wall
+u(3, ceil((NPJ+2)/3):NPJ+2) = 0;       % left wall
 
-%v(2,ceil((NPJ+2)/3):NPJ+2) = 0;         % upper block enter wall
-%v(2, 1) = 0;                           % low block enter wall
-%v(3, ceil((NPJ+2)/3):NPJ+2) = 0;       % left wall
-%v(1:NPI+2, 1) = 0;                     % bottom wall
-v(NPI+2, 1:NPJ+2) = 0;                 % right wall
+%v = u;
 
 
 
@@ -53,15 +45,15 @@ end
 
 % Velocity and temperature gradient at outlet = zero:
 % Correction factor m_in/m_out is used to satisfy global continuity
-u(4:NPI+1,NPJ+2) = u(4:NPI+1,NPJ+1)*m_in/m_out;
-v(4:NPI+1,NPJ+2) = v(4:NPI+1,NPJ+1)*m_in/m_out;
+u(4:NPI+1,NPJ+2) = u(4:NPI+1,NPJ+1);
+v(4:NPI+1,NPJ+2) = u(v:NPI+1,NPJ+1);
 
-k(4:NPI+1,NPJ+2) = k(4:NPI+1,NPJ+1);
-eps(4:NPI+1,NPJ+2) = eps(4:NPI+1,NPJ+1);
+k(4:NPI+1,NPJ+2) = k(NPI+1,2:NPJ+1);
+eps(4:NPI+1,NPJ+2) = eps(NPI+1,2:NPJ+1);
 
 k(1,1:NPJ+2)     = 2./3.*(U_IN*Ti)^2; % at inlet
 eps(1,1:NPJ+2)   = Cmu^0.75 *k(1,1:NPJ+2).^1.5/(0.07*YMAX*0.5); % at inlet
 
-T(3:NPI+2,NPJ+2) = T(3:NPI+2,NPJ+1);
+T(3:NPI+2,NPJ+2) = T(3:NPI+1,NPJ+2);
 
 end

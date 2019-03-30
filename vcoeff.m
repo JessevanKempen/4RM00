@@ -44,7 +44,16 @@ for I = Istart:Iend
         % The source terms
         muw = 0.25*(mueff(I-1,J-1) + mueff(I,J-1) + mueff(I-1,J) + mueff(I,J));
         mue = 0.25*(mueff(I,J-1) + mueff(I+1,J-1) + mueff(I,J) + mueff(I+1,J));
-        SP(I,j) = 0.;
+        
+%          if J==2 || I == 3 && J > 10 || I == NPI+1
+%             if yplus(I,J) < 11.63
+%                 SP(I,j) = -mu(I,J)*AREAs/(0.5*AREAw);
+%             else
+%                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
+%             end
+%          else
+            SP(I,j) = 0.;
+%          end        
         Su(I,j) = (mueff(I,J)*dvdy(I,J) - mueff(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i)) - ...
             2./3. * (rho(I,J)*k(I,J) - rho(I,J-1)*k(I,J-1))/(y(J) - y(J-1));
@@ -56,6 +65,21 @@ for I = Istart:Iend
         aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
         aPold   = 0.5*(rho(I,J-1) + rho(I,J))*AREAe*AREAn/Dt;
+        
+        % transport of v through the baffles can be switched off by setting
+        % the coefficients to zero
+%         if (I == ceil((NPI+1)/5) && j < ceil((NPJ+1)/3))       % left of baffle i = 5 & j < 14
+%             aE(I,j) = 0;
+%         end
+%         if (I == ceil((NPI+1)/5+1) && j < ceil((NPJ+1)/3))     % right of baffle i = 6 & J < 14
+%             aW(I,j) = 0;
+%         end
+%         if (I == ceil(2*(NPI+1)/5) && j > ceil(2*(NPJ+1)/3))   % left of baffle i = 9 & j > 28
+%             aE(I,j) = 0;
+%         end
+%         if (I == ceil(2*(NPI+1)/5+1) && j > ceil(2*(NPJ+1)/3)) % right of baffle i = 10 & j > 28
+%             aW(I,j) = 0;
+%         end
         
         % eq. 8.31 without time dependent terms (see also eq. 5.14):
         aP(I,j) = aW(I,j) + aE(I,j) + aS(I,j) + aN(I,j) + Fe - Fw + Fn - Fs - SP(I,J) + aPold;
