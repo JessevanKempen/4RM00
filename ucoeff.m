@@ -70,20 +70,27 @@ for I = Istart:Iend
             2./3. * (rho(I,J)*k(I,J) - rho(I-1,J)*k(I-1,J))/(x(I) - x(I-1));
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
-        % The coefficients (hybrid differencing scheme)
-        aW(i,J) = max([ Fw, Dw + Fw/2, 0.]);
-        aE(i,J) = max([-Fe, De - Fe/2, 0.]);
+        % The coefficients (hybrid differencing scheme)     
+        aN(i,J) = max([-Fn, Dn - Fn/2, 0.]);
+        
         if J==2
             aS(i,J) = 0.;
         else
             aS(i,J) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if J==NPJ+1
-            aN(i,J) = 0.;
+        if i == 2
+            aW(i,J) = 0.;
         else
-            aN(i,J) = max([-Fn, Dn - Fn/2, 0.]);
+            aW(i,J) = max([ Fw, Dw + Fw/2, 0.]);
         end
+
+        if i ==NPJ+1
+            aE(i,J) = 0.;
+        else
+            aE(i,J) = max([-Fe, De - Fe/2, 0.]);
+        end
+        
         aPold   = 0.5*(rho(I-1,J) + rho(I,J))*AREAe*AREAn/Dt;
         
         % eq. 8.31 without time dependent terms (see also eq. 5.14):

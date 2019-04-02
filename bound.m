@@ -4,7 +4,7 @@ function [] = bound()
 % constants
 global NPI NPJ U_IN YMAX Cmu Ti
 % variables
-global y u v T m_in m_out y_v F_u k eps
+global y x u v T m_in m_out y_v x_u F_u k eps
 
 % Fixed temperature/velocity at the upper and lower wall
 % for J = 1:NPJ+2
@@ -13,20 +13,24 @@ global y u v T m_in m_out y_v F_u k eps
 % end
 
 u(2,2:13) = U_IN*1.5; %entering uniform x velocity
-%v(1,NPJ+2) = 0;        %entering y velocity = 0
-%v(2,1:NPJ+2) = 0;        %entering y velocity = 0
+v(2,2:NPJ+2) = 0;     %entering y velocity = 0
+v(3,2:NPJ+2) = 0;     %entering y velocity = 0
 
-
+u(1,14:NPJ+2) = 0;                     % upper block outside no speed
 u(2,14) = 0;                           % upper block enter wall
 u(2, 1) = 0;                           % low block enter wall
 u(3, 14:NPJ+2) = 0;                    % left wall ceil((NPJ+2)/3)
 u(1:NPI+2, 1) = 0;                     % bottom wall
 u(NPI+2, 1:NPJ+2) = 0;                 % right wall
 
+%v(2,14) = 0;                           % upper block enter wall
+%v(3, 14:NPJ+2) = 0;                    % left wall ceil((NPJ+2)/3)
+
 %v(2,ceil((NPJ+2)/3):NPJ+2) = 0;         % upper block enter wall
 %v(2, 1) = 0;                           % low block enter wall
 %v(3, ceil((NPJ+2)/3):NPJ+2) = 0;       % left wall
 %v(1:NPI+2, 1) = 0;                     % bottom wall
+
 v(NPI+2, 1:NPJ+2) = 0;                 % right wall
 
 
@@ -43,12 +47,25 @@ convect();
 m_in = 0.;
 m_out = 0.;
 
+% for J = 2:13
+%     j = J;
+%     AREAw = y_v(j+1) - y_v(j); % See fig. 6.3
+%     m_in  = m_in  + F_u(2,J)*AREAw;
+% end
+% 
+% for I = 4:NPI+1
+%     i = I;
+%     AREAs = x_u(i+1) - x_u(i); % See fig. 6.3
+%     m_out = m_out + F_u(I,NPJ+1)*AREAs;   
+% end
+
 for J = 2:NPJ+1
     j = J;
     AREAw = y_v(j+1) - y_v(j); % See fig. 6.3
     m_in  = m_in  + F_u(2,J)*AREAw;
     m_out = m_out + F_u(NPI+1,J)*AREAw;
 end
+
 % end: globcont()
 
 % Velocity and temperature gradient at outlet = zero:

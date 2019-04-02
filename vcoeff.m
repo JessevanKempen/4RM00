@@ -60,10 +60,31 @@ for I = Istart:Iend
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
         % The coefficients (hybrid differencing scheme)
-        aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);
-        aE(I,j) = max([-Fe, De - Fe/2, 0.]);
-        aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
+        aW(I,j) = max([ Fw, Dw + Fw/2, 0.]); %(hier zit nog een error in)
+        %aE(I,j) = max([-Fe, De - Fe/2, 0.]);
+        %aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
+
+        %aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
+        
+        if j==2
+            aS(I,j) = 0.;
+        else
+            aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
+        end
+        
+%         if i == 2
+%             aW(I,j) = 0.;
+%         else
+%             aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);
+%         end
+
+        if I ==NPJ+1
+            aE(i,J) = 0.;
+        else
+            aE(i,J) = max([-Fe, De - Fe/2, 0.]);
+        end
+        
         aPold   = 0.5*(rho(I,J-1) + rho(I,J))*AREAe*AREAn/Dt;
         
         % transport of v through the baffles can be switched off by setting
