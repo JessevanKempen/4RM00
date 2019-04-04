@@ -49,7 +49,7 @@ for I = Istart:Iend
             mut(I,J+1)*(y_v(j+1)-y(J)))*AREAn;
         
         % The source terms
-        if J==2 || J==NPJ+1
+        if J==2 %|| J==NPJ+1
             SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
             Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
         else

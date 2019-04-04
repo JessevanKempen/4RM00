@@ -7,7 +7,7 @@ global NPI NPJ LARGE U_IN XMAX YMAX
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
     yplus2 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
     relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old ...
-    eps_old dudx dudy dvdx dvdy
+    eps_old dudx dudy dvdx dvdy Twall 
 
 %% begin: memalloc()
 % allocate memory for variables
@@ -125,10 +125,11 @@ for i = 1: NPI+2
     end
 end
 
+
 rho(:,:)   = 1.0;      % Density
 v(:,:)     = 0.1;       % Velocity in y-direction
 p(:,:)     = 0.;       % Relative pressure
-T(:,:)     = 273.;     % Tempety
+T(:,:)     = 273.;     % Temperature
 mu(:,:)    = 2.E-5;    % Viscosity
 Cp(:,:)    = 1013.;    % J/(K*kg) Heat capacity - assumed constant for this problem
 Gamma = 0.025./Cp;     % Thermal conductivity divided by heat capacity
@@ -140,6 +141,9 @@ yplus2(:,:)= sqrt(rho .* u ./ mu) * (y(NPJ+2) - y(NPJ+1));  % yplus2
 yplus(:,:) = 1.;       % yplus
 tw(:,:)    = 5.;       % tw
 
+% T(1:NPI+2,1) = Twall;                   % bottom wall
+% T(NPI+2, 1:NPJ+2) = Twall;              % right wall
+% T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
 
 u_old  = u;  % Velocity in x-direction old timestep
 v_old  = v;  % Velocity in y-direction old timestep

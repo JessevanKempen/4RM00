@@ -73,19 +73,19 @@ for I = Istart:Iend
         % The coefficients (hybrid differencing scheme)     
         aN(i,J) = max([-Fn, Dn - Fn/2, 0.]);
         
-        if J==2
+        if J==2                                     %Bottom                                   
             aS(i,J) = 0.;
         else
             aS(i,J) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if i == 2
+        if i == 2 && J > 13                         %Left
             aW(i,J) = 0.;
         else
             aW(i,J) = max([ Fw, Dw + Fw/2, 0.]);
         end
 
-        if i ==NPJ+1
+        if i ==NPJ+1                                %Right
             aE(i,J) = 0.;
         else
             aE(i,J) = max([-Fe, De - Fe/2, 0.]);
