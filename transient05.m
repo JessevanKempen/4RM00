@@ -22,9 +22,9 @@ global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
 global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti
 
 NPI        = 20;       % number of grid cells in x-direction [-]
-NPJ        = 40;        % number of grid cells in y-direction [-]
+NPJ        = 120;        % number of grid cells in y-direction [-]
 XMAX       = 0.5;       % width of the domain [m]
-YMAX       = 0.3;       % height of the domain [m]
+YMAX       = 1.5;       % height of the domain [m]
 MAX_ITER   = 5;       % maximum number of outer iterations [-]
 U_ITER     = 1;         % number of Newton iterations for u equation [-]
 V_ITER     = 1;         % number of Newton iterations for v equation [-]
@@ -49,7 +49,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.1;
-TOTAL_TIME = 2;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 1;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% start main function here
 
@@ -212,26 +212,26 @@ fclose(velv);
 % end output()
 
 %% Post processing
-figure
-surf(T')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('Temp')
+% figure
+% surf(T')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('Temp')
 
-figure
-surf(p')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('Pressure')
+% figure
+% surf(p')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('Pressure')
 
-figure
-surf(pc')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('Correction of Pressure')
+% figure
+% surf(pc')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('Correction of Pressure')
 
 figure
 surf(u')
@@ -247,10 +247,10 @@ xlabel('x')
 ylabel('y')
 zlabel('velocity')
 
-figure
-surf(eps')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('epsilon')
+% figure
+% surf(eps')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('epsilon')
 

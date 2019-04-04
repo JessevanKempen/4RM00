@@ -49,7 +49,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.1;
-TOTAL_TIME = 0.5;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 1;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% start main function here
 
@@ -226,12 +226,12 @@ xlabel('x')
 ylabel('y')
 zlabel('Pressure')
 
-figure
-surf(pc')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('Correction of Pressure')
+% figure
+% surf(pc')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('Correction of Pressure')
 
 figure
 surf(u')
@@ -247,10 +247,10 @@ xlabel('x')
 ylabel('y')
 zlabel('velocity')
 
-figure
-surf(eps')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('epsilon')
+% figure
+% surf(eps')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('epsilon')
 
