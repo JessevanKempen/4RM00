@@ -52,8 +52,13 @@ for I = Istart:Iend
 %                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
 %             end
 %          else
+            if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+                J > 1+ceil((NPJ/3)) && J < 1+ceil((NPJ/3)+1)
+                SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
+            else
             SP(I,j) = 0.;
-%          end        
+            end        
+            
         Su(I,j) = (mueff(I,J)*dvdy(I,J) - mueff(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i)) - ...
             2./3. * (rho(I,J)*k(I,J) - rho(I,J-1)*k(I,J-1))/(y(J) - y(J-1));

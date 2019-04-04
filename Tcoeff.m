@@ -58,9 +58,9 @@ for I = Istart:Iend
         aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
         aPold   = rho(I,J)*AREAe*AREAn/Dt;
-        
+                     
         if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
-                J > ceil((NPJ/3)) && J < ceil((NPJ/3)+5)
+                J > ceil((NPJ/3)) && J < ceil((NPJ/3)+1)
             SP(I,J) = -LARGE;
             Su(I,J) = LARGE*373.;
         end

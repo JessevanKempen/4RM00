@@ -48,9 +48,14 @@ for I = Istart:Iend
             mut(I,J+1)*(y_v(j+1)-y(J)))*AREAn;
         
         % The source terms
-        if J== 2 || J==NPJ+1
-            SP(I,J) = -LARGE;
-            Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
+        %if I== 2 || J== NPJ+1 || (J == 2 && I > ceil(NPJ/3+1))
+        %    SP(I,J) = -LARGE;
+        %    Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
+        %else
+        if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+                J > ceil((NPJ/3)) && J < ceil((NPJ/3)+1)
+           SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
+           Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
         else
             SP(I,J) = -C2eps*rho(I,J)*eps(I,J)/(k(I,J) + SMALL);
             Su(I,J) = C1eps*eps(I,J)/k(I,J)*2.*mut(I,J)*E2(I,J);
@@ -60,10 +65,25 @@ for I = Istart:Iend
         SP(I,J) =  SP(I,J)*AREAw*AREAs;
         
         % The coefficients (hybrid differencing scheme)
-        aW(I,J) = max([ Fw, Dw + Fw/2, 0.]);
-        aE(I,J) = max([-Fe, De - Fe/2, 0.]);
-        aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
         aN(I,J) = max([-Fn, Dn - Fn/2, 0.]);
+        
+        if J==2                                     %Bottom                                   
+            aS(I,J) = 0.;
+        else
+            aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
+        end
+        
+        if I == 2 && J > ceil(NPJ/3+1)              %Left
+            aW(I,J) = 0.;
+        else
+            aW(I,J) = max([ Fw, Dw + Fw/2, 0.]);
+        end
+
+        if I ==NPJ+1                                %Right
+            aE(I,J) = 0.;
+        else
+            aE(I,J) = max([-Fe, De - Fe/2, 0.]);
+        end
         
         aPold   =  rho(I,J)*AREAe*AREAn/Dt;
         

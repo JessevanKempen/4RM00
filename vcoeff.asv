@@ -52,23 +52,21 @@ for I = Istart:Iend
 %                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
 %             end
 %          else
+            if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+                J > ceil((NPJ/3)) && J < ceil((NPJ/3)+1)
+            else
             SP(I,j) = 0.;
-%          end        
+            end        
+            
         Su(I,j) = (mueff(I,J)*dvdy(I,J) - mueff(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i)) - ...
             2./3. * (rho(I,J)*k(I,J) - rho(I,J-1)*k(I,J-1))/(y(J) - y(J-1));
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
         % The coefficients (hybrid differencing scheme)
-        if 
-        aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);   
-        %aE(I,j) = max([-Fe, De - Fe/2, 0.]);
-        %aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
-
-                aN(i,J) = max([-Fn, Dn - Fn/2, 0.]);
         
-        if j==3                                     %Bottom                                   
+        if j==3                                     % (checken of 3 niet 2 is)                                   
             aS(I,j) = 0.;
         else
             aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
@@ -77,36 +75,15 @@ for I = Istart:Iend
         if I == 2                                   %Left (checken of we hele kant willen)
             aW(I,j) = 0.;
         else
-            aW(i,J) = max([ Fw, Dw + Fw/2, 0.]);
+            aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);
         end
 
-        if i ==NPJ+1                                %Right
-            aE(i,J) = 0.;
+        if I == NPJ+1                               %Right
+            aE(I,j) = 0.;
         else
-            aE(i,J) = max([-Fe, De - Fe/2, 0.]);
+            aE(I,j) = max([-Fe, De - Fe/2, 0.]);
         end
-        
-        
-        %aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
-        
-        if j==2
-            aS(I,j) = 0.;
-        else
-            aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
-        end
-        
-%         if i == 2
-%             aW(I,j) = 0.;
-%         else
-%             aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);
-%         end
 
-        if I ==NPJ+1
-            aE(i,J) = 0.;
-        else
-            aE(i,J) = max([-Fe, De - Fe/2, 0.]);
-        end
-        
         aPold   = 0.5*(rho(I,J-1) + rho(I,J))*AREAe*AREAn/Dt;
         
         % transport of v through the baffles can be switched off by setting

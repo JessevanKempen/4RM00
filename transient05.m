@@ -52,7 +52,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.1;
-TOTAL_TIME = 5;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 1;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% hot source term
 
@@ -108,12 +108,32 @@ for time = Dt:Dt:TOTAL_TIME
         viscosity();
         bound();
         
-        figure
+        %% dynamic plot of velocity      
+        figure(1)
+        subplot(1,2,1);
         quiver(u',v')
+        xlabel('x')
+        ylabel('y')
+        title('velocity')
+
+        subplot(1,2,2);
+        %contour(T', 20)
+        surf(T)
         colorbar
         xlabel('x')
         ylabel('y')
-        zlabel('velocity')
+        zlabel('Temp')
+        title("Temperature")
+
+%         subplot(2,2,3);
+%         surf(p')
+%         colorbar
+%         xlabel('x')
+%         ylabel('y')
+%         zlabel('Pressure')
+%         title("Pressure")
+        
+        drawnow
         
         % begin:storeresults()
         % Store data at current time level in arrays for "old" data
@@ -226,12 +246,12 @@ fclose(velv);
 % end output()
 
 %% Post processing
-figure
-surf(T')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('Temp')
+% figure
+% surf(T')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('Temp')
 
 % figure
 % surf(p')
@@ -247,12 +267,12 @@ zlabel('Temp')
 % ylabel('y')
 % zlabel('Correction of Pressure')
 
-figure
-surf(u')
-colorbar
-xlabel('x')
-ylabel('y')
-zlabel('horizontal velocity')
+% figure
+% surf(u')
+% colorbar
+% xlabel('x')
+% ylabel('y')
+% zlabel('horizontal velocity')
 
 % figure
 % quiver(u',v')
