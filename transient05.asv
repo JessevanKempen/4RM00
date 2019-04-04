@@ -49,7 +49,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.1;
-TOTAL_TIME = 2;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 0.5;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% start main function here
 
