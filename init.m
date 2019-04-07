@@ -5,9 +5,9 @@ function [] = init()
 global NPI NPJ LARGE U_IN XMAX YMAX
 % variables
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
-    yplus2 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
+    yplus2 yplus3 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
     relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old ...
-    eps_old dudx dudy dvdx dvdy Twall 
+    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee
 
 %% begin: memalloc()
 % allocate memory for variables
@@ -35,8 +35,13 @@ E2  = zeros(NPI+2,NPJ+2);
 yplus  = zeros(NPI+2,NPJ+2);
 yplus1  = zeros(NPI+2,NPJ+2);
 yplus2  = zeros(NPI+2,NPJ+2);
+yplus3  = zeros(NPI+2,NPJ+2);
 uplus  = zeros(NPI+2,NPJ+2);
+Tplus = zeros(NPI+2,NPJ+2);
 tw  = zeros(NPI+2,NPJ+2);
+sigmaturb = zeros(NPI+2,NPJ+2);
+sigmalam = zeros(NPI+2,NPJ+2);
+Pee = zeros(NPI+2,NPJ+2);
 
 u_old  = zeros(NPI+2,NPJ+2);
 v_old  = zeros(NPI+2,NPJ+2);
@@ -127,7 +132,7 @@ end
 
 
 rho(:,:)   = 1.0;      % Density
-v(:,:)     = 0.1;       % Velocity in y-direction
+v(:,:)     = 0.1;      % Velocity in y-direction
 p(:,:)     = 0.;       % Relative pressure
 T(:,:)     = 273.;     % Temperature
 mu(:,:)    = 2.E-5;    % Viscosity
@@ -135,15 +140,20 @@ Cp(:,:)    = 1013.;    % J/(K*kg) Heat capacity - assumed constant for this prob
 Gamma = 0.025./Cp;     % Thermal conductivity divided by heat capacity
 k(:,:)     = 1e-3;     % k
 eps(:,:)   = 1e-4;     % epsilon
+sigmaturb(:,:) = 0.9;  % Prandtl number turbulence
+sigmalam(:,:) = (mu .* Cp) ./Gamma; % Prandtl number laminar
 uplus(:,:) = 1.;       % uplus
 yplus1(:,:)= sqrt(rho .* u ./ mu) * (y(2) - y(1));   % yplus1
-yplus2(:,:)= sqrt(rho .* u ./ mu) * (y(NPJ+2) - y(NPJ+1));  % yplus2
+yplus2(:,:)= sqrt(rho .* v ./ mu) * (x(2) - x(1));   % yplus2
+yplus3(:,:)= sqrt(rho .* v ./ mu) * (x(NPI+2) - x(NPI+1));  % yplus3
 yplus(:,:) = 1.;       % yplus
+Tplus(:,:) = 1.;       % Tplus
 tw(:,:)    = 5.;       % tw
+Pee(:,:) = 9.24.*( (sigmalam ./ sigmaturb).^0.75 - 1) .* (1 + 0.28.*exp(-0.007.*(sigmalam ./ sigmaturb)));
 
-% T(1:NPI+2,1) = Twall;                   % bottom wall
-% T(NPI+2, 1:NPJ+2) = Twall;              % right wall
-% T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
+T(1:NPI+2,1) = Twall;                   % bottom wall
+T(NPI+2, 1:NPJ+2) = Twall;              % right wall
+T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
 
 u_old  = u;  % Velocity in x-direction old timestep
 v_old  = v;  % Velocity in y-direction old timestep

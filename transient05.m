@@ -17,9 +17,9 @@ clc
 %% declare all variables and contants
 % variables
 global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
-    u_old v_old pc_old p_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 Twall Tinlet
+    u_old v_old pc_old p_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 yplus3 Twall Tinlet Tplus
 % constants
-global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti
+global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti
 
 NPI        = 20;       % number of grid cells in x-direction [-]
 NPJ        = 40;        % number of grid cells in y-direction [-]
@@ -37,9 +37,9 @@ SAVGneeded = 1E-9;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 2.0;       % in flow velocity [m/s]
+U_IN       = 3.0;       % in flow velocity [m/s]
 
-Twall      = 575;       % Wall temperature [K]
+Twall      = 375;       % Wall temperature [K]
 Tinlet     = 300;       % Inlet temperature air [K]
 
 Cmu        = 0.09;
@@ -52,7 +52,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.1;
-TOTAL_TIME = 1;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 3;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% hot source term
 
@@ -118,7 +118,7 @@ for time = Dt:Dt:TOTAL_TIME
 
         subplot(1,2,2);
         %contour(T', 20)
-        surf(T)
+        surf(T')
         colorbar
         xlabel('x')
         ylabel('y')

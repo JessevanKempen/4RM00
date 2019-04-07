@@ -5,7 +5,7 @@ function [] = epscoeff()
 global NPI NPJ Dt Cmu LARGE SMALL sigmaeps kappa C1eps C2eps
 % variables
 global x x_u y y_v SP Su F_u F_v mut rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP k eps E2 eps_old
+    Jstart Jend b aE aW aN aS aP k eps E2 eps_old uplus
 
 
 Istart = 2;
@@ -52,10 +52,12 @@ for I = Istart:Iend
         %    SP(I,J) = -LARGE;
         %    Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
         %else
+        
+        % Hot wood source is source term for turbulence
         if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
-                J > ceil((NPJ/3)) && J < ceil((NPJ/3)+1)
-           SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
-           Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
+                J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+           SP(I,J) = -LARGE;
+           Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
         else
             SP(I,J) = -C2eps*rho(I,J)*eps(I,J)/(k(I,J) + SMALL);
             Su(I,J) = C1eps*eps(I,J)/k(I,J)*2.*mut(I,J)*E2(I,J);
@@ -67,7 +69,7 @@ for I = Istart:Iend
         % The coefficients (hybrid differencing scheme)
         aN(I,J) = max([-Fn, Dn - Fn/2, 0.]);
         
-        if J==2                                     %Bottom                                   
+        if J==2 %|| (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J == 1+4*ceil(NPJ/5)) %Bottom or bottom of pan                                 
             aS(I,J) = 0.;
         else
             aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);

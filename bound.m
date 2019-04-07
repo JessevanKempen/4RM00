@@ -55,7 +55,7 @@ for J = 2:NPJ+1
     j = J;
     AREAw = y_v(j+1) - y_v(j); % See fig. 6.3
     m_in  = m_in  + F_u(2,J)*AREAw;
-    end
+end
 
 for I = 2:NPI+1
     i = I;
@@ -73,9 +73,9 @@ v(2:NPI+1,NPJ+2) = v(2:NPI+1,NPJ+1)*m_in/m_out;
 k(2:NPI+1,NPJ+2) = k(2:NPI+1,NPJ+1);
 eps(2:NPI+1,NPJ+2) = eps(2:NPI+1,NPJ+1);
 
-T(1:NPI+2,NPJ+2) = T(1:NPI+2,NPJ+1);
+T(2:NPI+1,NPJ+2) = T(2:NPI+1,NPJ+1);
 
-k(1,1:NPJ+2)     = 2./3.*(U_IN*Ti)^2; % at inlet
+k(1,1:NPJ+2)     = 1.5*(U_IN*Ti)^2; % at inlet
 eps(1,1:NPJ+2)   = Cmu^0.75 *k(1,1:NPJ+2).^1.5/(0.07*YMAX*0.5); % at inlet
 
 

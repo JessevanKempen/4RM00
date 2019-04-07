@@ -2,10 +2,11 @@ function [] = vcoeff()
 % Purpose: To calculate the coefficients for the v equation.
 
 % constants
-global NPI NPJ  Dt
+global NPI NPJ Dt Cmu
 % variables
-global x x_u y y_v v p mueff SP Su F_u F_v d_v relax_v v_old rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP dvdy dudy k
+global x x_u y y_v v p mu mueff SP Su F_u F_v d_v relax_v v_old rho Istart Iend ...
+    Jstart Jend b aE aW aN aS aP dvdy dudy k LARGE yplus uplus
+
 
 
 Istart = 2;
@@ -45,19 +46,27 @@ for I = Istart:Iend
         muw = 0.25*(mueff(I-1,J-1) + mueff(I,J-1) + mueff(I-1,J) + mueff(I,J));
         mue = 0.25*(mueff(I,J-1) + mueff(I+1,J-1) + mueff(I,J) + mueff(I+1,J));
         
-%          if J==2 || I == 3 && J > 10 || I == NPI+1
-%             if yplus(I,J) < 11.63
-%                 SP(I,j) = -mu(I,J)*AREAs/(0.5*AREAw);
-%             else
-%                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
-%             end
-%          else
-            if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
-                J > 1+ceil((NPJ/3)) && J < 1+ceil((NPJ/3)+1)
-                SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
+        % v can be fixed to zero by setting SP to a very large value
+        
+        % vertical velocity of pan at outlet fixed to zero
+        if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
+            SP(i,J) = -LARGE;
+        
+        % vertical velocity of hot wood source fixed to source term SP, is
+        % why is this one not -LARGE but different -> laminar SP
+        elseif I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+                J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+            SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;  %what is this term? -> laminar SP
+            
+        % thin layer at walls, being laminar or turbulent dependent on yplus    
+        elseif J == 3 || I == NPJ+1 || (I == 2 && J > ceil(NPJ/3+1)) %grenslagen voor de muur
+            if yplus(I,J) < 11.63
+                SP(I,j) = -mu(I,J)*AREAs/(0.5*AREAw);
             else
+                SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;   
+            end
             SP(I,j) = 0.;
-            end        
+        end        
             
         Su(I,j) = (mueff(I,J)*dvdy(I,J) - mueff(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i)) - ...
