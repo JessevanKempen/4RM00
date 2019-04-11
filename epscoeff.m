@@ -53,15 +53,16 @@ for I = Istart:Iend
         %    Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
         %else
         
-        % Hot wood source is source term for turbulence
-        if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
-                J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
-           SP(I,J) = -LARGE;
-           Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
-        else
+        % Hot wood source is source term for turbulence (eq. 9.23)
+         if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
+            J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+            SP(I,J) = -LARGE;
+            Su(I,J) = LARGE;
+
+         else
             SP(I,J) = -C2eps*rho(I,J)*eps(I,J)/(k(I,J) + SMALL);
             Su(I,J) = C1eps*eps(I,J)/k(I,J)*2.*mut(I,J)*E2(I,J);
-        end
+         end
              
         Su(I,J) =  Su(I,J)*AREAw*AREAs;
         SP(I,J) =  SP(I,J)*AREAw*AREAs;

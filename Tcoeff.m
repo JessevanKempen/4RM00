@@ -57,7 +57,7 @@ for I = Istart:Iend
         % The coefficients (hybrid differencing scheme)
         aN(I,J) = max([-Fn, Dn - Fn/2, 0.]);
                 
-        if J==2 || (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 1+4*ceil(NPJ/5)) %Bottom or bottom of pan                                 
+        if J==2 %|| (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 1+4*ceil(NPJ/5)) %Bottom or bottom of pan                                 
             aS(I,J) = 0.;
         else
             aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
@@ -77,11 +77,11 @@ for I = Istart:Iend
         
         aPold   = rho(I,J)*AREAe*AREAn/Dt;
           
-        % Heat flux at source term form the hot wood source
-        if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+        % Heat flux at source term from the hot wood source
+        if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
                 J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
-            SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 * Cp(I,J) / Tplus(I,J) *Acell;
-            Su(I,J) = rho(I,J) * Cmu^0.25 * k(I,J)^0.5 * Cp(I,J) * T(I,J) / Tplus(I,J) *Acell;
+            SP(I,J) = -LARGE;
+            Su(I,J) = LARGE*500.;
             
         elseif J == 2 || I == NPJ+1 || (I == 2 && J > ceil(NPJ/3+1))          
             SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 * Cp(I,J) / Tplus(I,J) *Acell;

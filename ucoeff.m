@@ -49,13 +49,19 @@ for I = Istart:Iend
         mun = 0.25*(mueff(I-1,J+1) + mueff(I,J+1) + mueff(I-1,J) + mueff(I,J));
         
         % u can be fixed to zero by setting SP to a very large value
-        if (I > 2+ceil(NPI/4) && I < 2+3*ceil(NPI/4) && J > 1+4*ceil(NPJ/5))
-            SP(i,J) = -LARGE;
+%         if (I > 2+ceil(NPI/4) && I < 2+3*ceil(NPI/4) && J > 1+4*ceil(NPJ/5))
+%             SP(i,J) = -LARGE;
             
-        elseif I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+%         if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
+%                 J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+%             SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *Acell;
+
+        % Hot wood source
+        if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
                 J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
-            SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *Acell;
-            
+				SP(i,J) = -LARGE;
+				Su(i,J) = 0.;
+                        
         elseif J == 2 || I == NPJ+1 || (I == 3 && J > ceil(NPJ/3+1))%grenslagen voor de muur turbulent/laminar
             if yplus(I,J) < 11.63
                 SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);           %dit checken in reader

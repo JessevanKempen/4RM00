@@ -19,10 +19,10 @@ clc
 global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
     u_old v_old pc_old p_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 yplus3 Twall Tinlet Tplus
 % constants
-global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti
+global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx
 
-NPI        = 20;       % number of grid cells in x-direction [-]
-NPJ        = 40;        % number of grid cells in y-direction [-]
+NPI        = 80;        % number of grid cells in x-direction [-]
+NPJ        = 160;       % number of grid cells in y-direction [-]
 XMAX       = 0.3;       % width of the domain [m]
 YMAX       = 1.5;       % height of the domain [m]
 MAX_ITER   = 5;       % maximum number of outer iterations [-]
@@ -32,12 +32,12 @@ PC_ITER    = 30;       % number of Newton iterations for pc equation [-]
 T_ITER     = 1;         % number of Newton iterations for T equation [-]
 EPS_ITER   = 1;         % number of Newton iterations for Eps equation [-]
 K_ITER     = 1;         % number of Newton iterations for K equation [-]
-SMAXneeded = 1E-8;      % maximum accepted error in mass balance [kg/s]
-SAVGneeded = 1E-9;      % maximum accepted average error in mass balance [kg/s]
+SMAXneeded = 1E-4;      % maximum accepted error in mass balance [kg/s]
+SAVGneeded = 1E-5;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 3.0;       % in flow velocity [m/s]
+U_IN       = 0.3;       % in flow velocity [m/s]
 
 Twall      = 375;       % Wall temperature [K]
 Tinlet     = 300;       % Inlet temperature air [K]
@@ -51,12 +51,8 @@ kappa      = 0.4187;
 ERough     = 9.793;
 Ti         = 0.04;
 
-Dt         = 0.1;
+Dt         = 0.01;
 TOTAL_TIME = 3;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
-
-%% hot source term
-
-
 
 %% start main function here
 
@@ -108,22 +104,23 @@ for time = Dt:Dt:TOTAL_TIME
         viscosity();
         bound();
         
-        %% dynamic plot of velocity      
-        figure(1)
-        subplot(1,2,1);
-        quiver(u',v')
-        xlabel('x')
-        ylabel('y')
-        title('velocity')
+        %% dynamic plot of velocity  
+        if iter == (1:MAX_ITER)
+            figure(1)
+            subplot(1,2,1);
+            quiver(u',v')
+            xlabel('x')
+            ylabel('y')
+            title('velocity')
 
-        subplot(1,2,2);
-        %contour(T', 20)
-        surf(T')
-        colorbar
-        xlabel('x')
-        ylabel('y')
-        zlabel('Temp')
-        title("Temperature")
+            subplot(1,2,2);
+            contour(T', 10)
+            %surf(T')
+            colorbar
+            xlabel('x')
+            ylabel('y')
+            zlabel('Temp')
+            title("Temperature")
 
 %         subplot(2,2,3);
 %         surf(p')
@@ -133,7 +130,8 @@ for time = Dt:Dt:TOTAL_TIME
 %         zlabel('Pressure')
 %         title("Pressure")
         
-        drawnow
+            drawnow
+        end 
         
         % begin:storeresults()
         % Store data at current time level in arrays for "old" data

@@ -31,6 +31,8 @@ v(NPI+2, 2:NPJ+2) = 0;                 % right wall has y velocity 0
 %T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
 T(1, 2: ceil(NPJ/3)) = Tinlet;           % Inlet T Left wall
 
+%T(ceil((NPI/2)-5):ceil(NPI/2)+5, ceil((NPJ/4)-3):ceil((NPJ/4)+3)) = 600;
+
 % begin: globcont();
 % Purpose: Calculate mass in and out of the calculation domain to
 %          correct for the continuity at outlet.
@@ -73,7 +75,7 @@ v(2:NPI+1,NPJ+2) = v(2:NPI+1,NPJ+1)*m_in/m_out;
 k(2:NPI+1,NPJ+2) = k(2:NPI+1,NPJ+1);
 eps(2:NPI+1,NPJ+2) = eps(2:NPI+1,NPJ+1);
 
-T(2:NPI+1,NPJ+2) = T(2:NPI+1,NPJ+1);
+T(2:NPI+2,NPJ+2) = T(2:NPI+2,NPJ+1);
 
 k(1,1:NPJ+2)     = 1.5*(U_IN*Ti)^2; % at inlet
 eps(1,1:NPJ+2)   = Cmu^0.75 *k(1,1:NPJ+2).^1.5/(0.07*YMAX*0.5); % at inlet

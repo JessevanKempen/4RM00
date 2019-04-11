@@ -7,7 +7,7 @@ global NPI NPJ LARGE U_IN XMAX YMAX
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
     yplus2 yplus3 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
     relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old ...
-    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee
+    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee Dx Dt COURANT
 
 %% begin: memalloc()
 % allocate memory for variables
@@ -81,6 +81,9 @@ d_v = zeros(NPI+2,NPJ+2);
 Dx = XMAX/NPI;
 Dy = YMAX/NPJ;
 
+% Coarant number
+COURANT = U_IN*(Dt/Dx)
+
 % Length variable for the scalar points in the x direction
 x(1) = 0.;
 x(2) = 0.5*Dx;
@@ -151,9 +154,9 @@ Tplus(:,:) = 1.;       % Tplus
 tw(:,:)    = 5.;       % tw
 Pee(:,:) = 9.24.*( (sigmalam ./ sigmaturb).^0.75 - 1) .* (1 + 0.28.*exp(-0.007.*(sigmalam ./ sigmaturb)));
 
-T(1:NPI+2,1) = Twall;                   % bottom wall
-T(NPI+2, 1:NPJ+2) = Twall;              % right wall
-T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
+% T(1:NPI+2,1) = Twall;                   % bottom wall
+% T(NPI+2, 1:NPJ+2) = Twall;              % right wall
+% T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
 
 u_old  = u;  % Velocity in x-direction old timestep
 v_old  = v;  % Velocity in y-direction old timestep

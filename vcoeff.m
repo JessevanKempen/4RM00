@@ -49,14 +49,14 @@ for I = Istart:Iend
         % v can be fixed to zero by setting SP to a very large value
         
         % vertical velocity of pan at outlet fixed to zero
-        if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
-            SP(i,J) = -LARGE;
+%         if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
+%             SP(i,J) = -LARGE;
         
-        % vertical velocity of hot wood source fixed to source term SP, is
-        % why is this one not -LARGE but different -> laminar SP
-        elseif I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
-                J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
-            SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;  %what is this term? -> laminar SP
+         % Hot wood source
+        if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
+           J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+			  SP(i,J) = -LARGE;
+		      Su(i,J) = 0.;
             
         % thin layer at walls, being laminar or turbulent dependent on yplus    
         elseif J == 3 || I == NPJ+1 || (I == 2 && J > ceil(NPJ/3+1)) %grenslagen voor de muur
