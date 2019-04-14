@@ -5,7 +5,7 @@ function [] = kcoeff()
 global NPI NPJ Dt Cmu sigmak
 % variables
 global x x_u y y_v SP Su F_u F_v mut rho u uplus tw Istart Iend ...
-    Jstart Jend b aE aW aN aS aP k k_old eps E2 LARGE
+    Jstart Jend b aE aW aN aS aP k k_old eps E2 LARGE wood_J wood_I inlet_J
 
 
 Istart = 2;
@@ -54,13 +54,12 @@ for I = Istart:Iend
 %             Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
 
         % Hot wood source is source term for turbulence (eq. 9.23)
-         if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
-            J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+         if I < wood_I && J > inlet_J && J < wood_J
             SP(I,J) = -LARGE;
             Su(I,J) = LARGE;
         
         % All near wall nodes (eq. 9.23)
-         elseif J == 2 || I == NPJ+1 || (I == 3 && J > ceil(NPJ/3+1))
+         elseif J == 2 || I == NPJ+1 || (I == 2 && J > wood_J)
               SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
               Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
              
@@ -81,7 +80,7 @@ for I = Istart:Iend
             aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if I == 2 && J > ceil(NPJ/3+1)              %Left
+        if I == 2 && J > wood_J              %Left
             aW(I,J) = 0.;
         else
             aW(I,J) = max([ Fw, Dw + Fw/2, 0.]);

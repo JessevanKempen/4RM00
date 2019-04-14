@@ -4,7 +4,7 @@ function [] = calculateuplus()
 % constants
 global NPI NPJ Cmu kappa ERough sigmaturb
 % variables
-global x y rho k tw yplus yplus1 yplus2 yplus3 uplus T Tplus mu u v Pee
+global x y rho k tw yplus yplus1 yplus2 yplus3 uplus T Tplus mu u v Pee wood_J inlet_J
 
 viscosity();
 
@@ -34,25 +34,7 @@ for I = 1:NPI+2
     end
 end
 
-for J = ceil(NPJ/3):NPJ+2
-    j = J;
-    if yplus2(2,J) < 11.63
-       Tplus(2,J)   = T(2,J); 
-    else   
-       Tplus(2,J)  = sigmaturb(2,J) * (uplus(2,J) + Pee(2,J)); 
-    end    
-end
-
-for J = 1:NPI+2
-    j = J;
-    if yplus3(NPI+1,J) < 11.63
-       Tplus(NPI+1,J)   = T(NPI+1,J);
-    else
-       Tplus(NPI+1,J)   = sigmaturb(NPI+1,J) * (uplus(NPI+1,J) + Pee(NPI+1,J)); 
-    end
-end
-
-for J = ceil(NPJ/3):NPJ+1
+for J = wood_J+1:NPJ+1
     j = J;
     if yplus2(2,J) < 11.63
         tw(2,J)      = mu(2,J)*0.5*(v(2,j)+v(2,j+1))/(x(2)-x(1));
@@ -69,7 +51,16 @@ for J = ceil(NPJ/3):NPJ+1
     end
 end
 
-for J = 1:NPI+1
+for J = wood_J+1:NPJ+2
+    j = J;
+    if yplus2(2,J) < 11.63
+       Tplus(2,J)   = T(2,J); 
+    else   
+       Tplus(2,J)  = sigmaturb(2,J) * (uplus(2,J) + Pee(2,J)); 
+    end    
+end
+
+for J = 1:NPJ+1
     j = J;
     if yplus3(NPI+1,J) < 11.63          
         tw(NPI+1,J)      = mu(NPI+1,J)*0.5*(v(NPI+1,j)+v(NPI+1,j+1))/(x(NPI+2)-x(NPI+1));
@@ -86,6 +77,14 @@ for J = 1:NPI+1
     end 
 end 
 
+for J = 1:NPJ+2
+    j = J;
+    if yplus3(NPI+1,J) < 11.63
+       Tplus(NPI+1,J)   = T(NPI+1,J);
+    else
+       Tplus(NPI+1,J)   = sigmaturb(NPI+1,J) * (uplus(NPI+1,J) + Pee(NPI+1,J)); 
+    end
+end
         
 end
 

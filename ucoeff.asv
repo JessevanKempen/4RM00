@@ -6,7 +6,7 @@ function [] = ucoeff()
 global NPI NPJ Dt Cmu
 % variables
 global x x_u y y_v u p mu mueff SP Su F_u F_v d_u relax_u u_old rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx LARGE wood_I wood_J inlet_J
+    Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx LARGE
 
 
 
@@ -56,14 +56,14 @@ for I = Istart:Iend
 %                 J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
 %             SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *Acell;
 
-        % horizontal velocity of pan at outlet fixed to zero
-%         if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
-%             SP(i,J) = -LARGE;
-%             Su(i,J) = 0.;
+        % vertical velocity of pan at outlet fixed to zero
+        if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
+            SP(i,J) = -LARGE;
+            Su(i,J) = 0.;
             
         % Hot wood source
-        if  I > 2 && I < wood_I && ...
-                J > inlet_J && J < wood_J
+        if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
+                J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
 				SP(i,J) = -LARGE;
 				Su(i,J) = 0.;
                         

@@ -5,7 +5,7 @@ function [] = epscoeff()
 global NPI NPJ Dt Cmu LARGE SMALL sigmaeps kappa C1eps C2eps
 % variables
 global x x_u y y_v SP Su F_u F_v mut rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP k eps E2 eps_old uplus
+    Jstart Jend b aE aW aN aS aP k eps E2 eps_old uplus wood_I wood_J inlet_J
 
 
 Istart = 2;
@@ -48,14 +48,13 @@ for I = Istart:Iend
             mut(I,J+1)*(y_v(j+1)-y(J)))*AREAn;
         
         % The source terms
-        %if I== 2 || J== NPJ+1 || (J == 2 && I > ceil(NPJ/3+1))
-        %    SP(I,J) = -LARGE;
-        %    Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
-        %else
+        if J == 2 || I == NPJ+1 || (I == 2 && J > wood_J)
+           SP(I,J) = -LARGE;
+           Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
+        
         
         % Hot wood source is source term for turbulence (eq. 9.23)
-         if I > ceil((NPI/2)-20) && I < ceil((NPI/2)+20) && ...
-            J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
+        elseif I < wood_I && J > inlet_J && J < wood_J
             SP(I,J) = -LARGE;
             Su(I,J) = LARGE;
 

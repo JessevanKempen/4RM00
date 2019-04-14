@@ -5,7 +5,7 @@ function [] = pccoeff()
 global NPI NPJ
 % variables
 global x_u y_v pc rho SP Su F_u F_v d_u d_v Istart Iend Jstart Jend ...
-    b aE aW aN aS aP SMAX SAVG
+    b aE aW aN aS aP SMAX SAVG wood_I wood_J inlet_J LARGE
 
 Istart = 2;
 Iend = NPI+1;
@@ -33,8 +33,14 @@ for I = Istart:Iend
         % The constant b' in eq. 6.32
         b(I,J) = F_u(i,J)*AREAw - F_u(i+1,J)*AREAe + F_v(I,j)*AREAs - F_v(I,j+1)*AREAn;
         
-        SP(I,J) = 0.;
-        Su(I,J) = 0.;
+        % Hot wood source is source term for turbulence (eq. 9.23)
+        if I < wood_I && J > inlet_J && J < wood_J
+            SP(I,J) = LARGE;
+            Su(I,J) = -LARGE*0;
+        else    
+            SP(I,J) = 0.;
+            Su(I,J) = 0.;
+        end
         
         b(I,J) = b(I,J) + Su(I,J);
         

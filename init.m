@@ -82,7 +82,7 @@ Dx = XMAX/NPI;
 Dy = YMAX/NPJ;
 
 % Coarant number
-COURANT = U_IN*(Dt/Dx)
+%COURANT = U_IN*(Dt/Dx)
 
 % Length variable for the scalar points in the x direction
 x(1) = 0.;
@@ -148,15 +148,12 @@ sigmalam(:,:) = (mu .* Cp) ./Gamma; % Prandtl number laminar
 uplus(:,:) = 1.;       % uplus
 yplus1(:,:)= sqrt(rho .* u ./ mu) * (y(2) - y(1));   % yplus1
 yplus2(:,:)= sqrt(rho .* v ./ mu) * (x(2) - x(1));   % yplus2
-yplus3(:,:)= sqrt(rho .* v ./ mu) * (x(NPI+2) - x(NPI+1));  % yplus3
+yplus3(:,:)= sqrt(rho .* v ./ mu) * (x(NPI+1) - x(NPI));  % yplus3
 yplus(:,:) = 1.;       % yplus
 Tplus(:,:) = 1.;       % Tplus
 tw(:,:)    = 5.;       % tw
 Pee(:,:) = 9.24.*( (sigmalam ./ sigmaturb).^0.75 - 1) .* (1 + 0.28.*exp(-0.007.*(sigmalam ./ sigmaturb)));
 
-% T(1:NPI+2,1) = Twall;                   % bottom wall
-% T(NPI+2, 1:NPJ+2) = Twall;              % right wall
-% T(1, ceil(NPJ/3+1):NPJ+2) = Twall;      % left wall
 
 u_old  = u;  % Velocity in x-direction old timestep
 v_old  = v;  % Velocity in y-direction old timestep
