@@ -41,28 +41,32 @@ for I = Istart:Iend
         SMAX = max([SMAX,abs(b(I,J))]);
         SSUM = SSUM + abs(b(I,J));
 
-        % Hot wood source is source term for turbulence (eq. 9.23)
+        %% The source terms
+        % Wood block
         if I < wood_I && J > inlet_J && J < wood_J+1
             SP(I,J) = -LARGE;
             Su(I,J) = 0;
         end
         
-        % The coefficients
+        %% The coefficients
         aN(I,J) = 0.5*(rho(I,J) + rho(I,J+1))*d_v(I,j+1)*AREAn;
         
-        if J == 2                                   % bottom supress                             
+        % bottom wall
+        if J == 2                                                              
             aS(I,j) = 0.;
         else
             aS(I,J) = 0.5*(rho(I,J-1) + rho(I,J))*d_v(I,j)*AREAs;
         end
         
-        if I == 2 && J > wood_J                     % Left (checken of we hele kant willen)
+        % left wall
+        if I == 2 && J > wood_J                    
             aW(I,J) = 0.;
         else
             aW(I,J) = 0.5*(rho(I-1,J) + rho(I,J))*d_u(i,J)*AREAw;
         end
 
-        if I == NPJ+1                               %Right
+        % right wall
+        if I == NPJ+1                               
             aE(I,j) = 0.;
         else
             aE(I,J) = 0.5*(rho(I,J) + rho(I+1,J))*d_u(i+1,J)*AREAe;

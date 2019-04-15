@@ -46,22 +46,17 @@ for I = Istart:Iend
         muw = 0.25*(mueff(I-1,J-1) + mueff(I,J-1) + mueff(I-1,J) + mueff(I,J));
         mue = 0.25*(mueff(I,J-1) + mueff(I+1,J-1) + mueff(I,J) + mueff(I+1,J));
         
-        % v can be fixed to zero by setting SP to a very large value
-        
-        % vertical velocity of pan at outlet fixed to zero
-%         if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
-%             SP(i,J) = -LARGE;
-%             Su(i,J) = 0.;
-        
+        %% The source terms
          % Hot wood source
-        if  I > 2 && I < wood_I && J > inlet_J && J < wood_J
+        if I > 2 && I < wood_I && J > inlet_J && J < wood_J
 				SP(i,J) = -LARGE;
 				Su(i,J) = 0.;
             
-        % thin layer at walls, being laminar or turbulent dependent on yplus    
-        elseif J == 3 || I == NPJ+1 || (I == 2 && J > ceil(NPJ/3+1)) %grenslagen voor de muur
+        % Horizontal wall bottom, Vertical wall right, Vertical wall left  
+        elseif J == 3 || I == NPJ+1 || (I == 2 && J > wood_J)
             if yplus(I,J) < 11.63
                 SP(I,j) = -mu(I,J)*AREAs/(0.5*AREAw);
+                
             else
                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;   
             end
@@ -74,44 +69,32 @@ for I = Istart:Iend
             2./3. * (rho(I,J)*k(I,J) - rho(I,J-1)*k(I,J-1))/(y(J) - y(J-1));
         Su(i,J) =  Su(i,J)*AREAw*AREAs - rho(i,J).*g*(AREAw*AREAs)^2;
         
-        % The coefficients (hybrid differencing scheme)
+        %% The coefficients (hybrid differencing scheme)
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
         
-        if j==3                                     % (checken of 3 niet 2 is)                                   
+        % Left wall
+        if j==3                                                                       
             aS(I,j) = 0.;
         else
             aS(I,j) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if I == 2                                   %Left (checken of we hele kant willen)
+        % Bottom wall
+        if I == 2                                   
             aW(I,j) = 0.;
         else
             aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);
         end
 
-        if I == NPJ+1                               %Right
+        % Right wall
+        if I == NPJ+1                             
             aE(I,j) = 0.;
         else
             aE(I,j) = max([-Fe, De - Fe/2, 0.]);
         end
 
         aPold   = 0.5*(rho(I,J-1) + rho(I,J))*AREAe*AREAn/Dt;
-        
-        % transport of v through the baffles can be switched off by setting
-        % the coefficients to zero
-%         if (I == ceil((NPI+1)/5) && j < ceil((NPJ+1)/3))       % left of baffle i = 5 & j < 14
-%             aE(I,j) = 0;
-%         end
-%         if (I == ceil((NPI+1)/5+1) && j < ceil((NPJ+1)/3))     % right of baffle i = 6 & J < 14
-%             aW(I,j) = 0;
-%         end
-%         if (I == ceil(2*(NPI+1)/5) && j > ceil(2*(NPJ+1)/3))   % left of baffle i = 9 & j > 28
-%             aE(I,j) = 0;
-%         end
-%         if (I == ceil(2*(NPI+1)/5+1) && j > ceil(2*(NPJ+1)/3)) % right of baffle i = 10 & j > 28
-%             aW(I,j) = 0;
-%         end
-        
+             
         % eq. 8.31 without time dependent terms (see also eq. 5.14):
         aP(I,j) = aW(I,j) + aE(I,j) + aS(I,j) + aN(I,j) + Fe - Fw + Fn - Fs - SP(I,J) + aPold;
         

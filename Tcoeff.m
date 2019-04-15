@@ -49,40 +49,16 @@ for I = Istart:Iend
             + Gamma(I,J)*(y_v(j) - y(J-1))))*AREAs;
         Dn = ((Gamma(I,J)*Gamma(I,J+1))/(Gamma(I,J)*(y(J+1) - y_v(j+1)) ...
             + Gamma(I,J+1)*(y_v(j+1) - y(J))))*AREAn;
-        
-        % The source terms
-%         SP(I,J) = 0.;
-%         Su(I,J) = 0.;
-        
-        % The coefficients (hybrid differencing scheme)
-        aN(I,J) = max([-Fn, Dn - Fn/2, 0.]);
-                
-        if J==2 %|| (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 1+4*ceil(NPJ/5)) %Bottom or bottom of pan                                 
-            aS(I,J) = 0.;
-        else
-            aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
-        end
-        
-        if I == 2 && J > wood_J                     %Left
-            aW(I,J) = 0.;
-        else
-            aW(I,J) = max([ Fw, Dw + Fw/2, 0.]);
-        end
-
-        if I ==NPJ+1                                %Right
-            aE(I,J) = 0.;
-        else
-            aE(I,J) = max([-Fe, De - Fe/2, 0.]);
-        end
-        
-        aPold   = rho(I,J)*AREAe*AREAn/Dt;
-          
-        % Heat flux at source term from the hot wood source
+            
+        %% The source terms
+        % Heat flux from wood block       
         if I < wood_I && J > inlet_J && J < wood_J+1
             SP(I,J) = -LARGE;
             Su(I,J) = LARGE*Thot;
-            
-        elseif J == 2 || I == NPJ+1 || (I == 2 && J > wood_J)          
+        
+        % Horizontal wall bottom, Vertical wall right, Vertical wall left,
+        % wood block right
+        elseif J == 2 || I == NPJ+1 || (I == 2 && J > wood_J) || (I == wood_I+1 && J > inlet_J && J < wood_J+1)          
             SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 * Cp(I,J) / Tplus(I,J) *Acell;
             Su(I,J) = rho(I,J) * Cmu^0.25 * k(I,J)^0.5 * Cp(I,J) * T(I,J) / Tplus(I,J) *Acell;
             
@@ -90,6 +66,33 @@ for I = Istart:Iend
             SP(I,J) = 0.;
             Su(I,J) = 0.;
         end
+        
+        %% The coefficients (hybrid differencing scheme)
+        aN(I,J) = max([-Fn, Dn - Fn/2, 0.]);
+        
+        % Suppressing link at bottom wall
+        if J==2                                 
+            aS(I,J) = 0.;
+        else
+            aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
+        end
+        
+        % Suppressing link at left wall
+        if I == 2 && J > wood_J                   
+            aW(I,J) = 0.;
+        else
+            aW(I,J) = max([ Fw, Dw + Fw/2, 0.]);
+        end
+
+        % Suppressing link at right wall
+        if I ==NPJ+1                               
+            aE(I,J) = 0.;
+        else
+            aE(I,J) = max([-Fe, De - Fe/2, 0.]);
+        end
+        
+        aPold   = rho(I,J)*AREAe*AREAn/Dt;
+         
         
         % eq. 8.31 without time dependent terms (see also eq. 5.14):
         aP(I,J) = aW(I,J) + aE(I,J) + aS(I,J) + aN(I,J) + Fe - Fw + Fn - Fs - SP(I,J) + aPold;

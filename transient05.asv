@@ -16,15 +16,15 @@ close all
 clc
 %% declare all variables and contants
 % variables
-global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
+global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k P_ATM ...
     u_old v_old pc_old p_old rho_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 yplus3 Thot Tinlet Tplus wood_J wood_I inlet_J
 % constants
-global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx g R
+global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx Dy g R
 
-NPI        = 40;        % number of grid cells in x-direction [-]
-NPJ        = 80;        % number of grid cells in y-direction [-]
+NPI        = 50;        % number of grid cells in x-direction [-]
+NPJ        = 100;        % number of grid cells in y-direction [-]
 XMAX       = 0.18;       % width of the domain [m]
-YMAX       = 0.60;       % height of the domain [m]
+YMAX       = 0.54;       % height of the domain [m]
 MAX_ITER   = 20;       % maximum number of outer iterations [-]
 U_ITER     = 1;         % number of Newton iterations for u equation [-]
 V_ITER     = 1;         % number of Newton iterations for v equation [-]
@@ -32,14 +32,13 @@ PC_ITER    = 30;       % number of Newton iterations for pc equation [-]
 T_ITER     = 1;         % number of Newton iterations for T equation [-]
 EPS_ITER   = 1;         % number of Newton iterations for Eps equation [-]
 K_ITER     = 1;         % number of Newton iterations for K equation [-]
-SMAXneeded = 1E-4;      % maximum accepted error in mass balance [kg/s]
+SMAXneeded = 1E-3;      % maximum accepted error in mass balance [kg/s]
 SAVGneeded = 1E-5;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 5  ;       % in flow velocity [m/s]
+U_IN       = 2.5  ;     % in flow velocity [m/s]
 
-Pambient   = 1*10^5      % Ambient pressure [Pa]
 Tinlet     = 293.;       % Inlet temperature air [K]
 Thot       = 850.;       % Wood temperature [K]
        
@@ -53,13 +52,13 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.001;
-TOTAL_TIME = 0.3;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 0.01;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% start main function here
 
 init(); % initialization
 
-COURANT = U_IN*(Dt/Dx)
+COURANT = U_IN*(Dt/min(Dx,Dy))
 
 bound(); % apply boundary conditions
 
@@ -110,33 +109,34 @@ for time = Dt:Dt:TOTAL_TIME
         
         %% dynamic plot of velocity  
         %if iter > 0 (manier vinden om per iteratie 1 maal te plotten)
-            figure(1)
-            subplot(2,2,1);
-            quiver(x(2:5:end)',y(2:5:end)',u(2:5:end, 2:5:end)',v(2:5:end, 2:5:end)', 2);
-            xlabel('x')
-            ylabel('y')
-            title('velocity')
-            xlim([0 XMAX])
-            ylim([0 YMAX])
-
-            subplot(2,2,2);
-            contour(x', y', T', 10) %,'ShowText','on')
-            %surf(T')
-            colorbar
-            xlabel('x')
-            ylabel('y')
-            zlabel('Temp')
-            title("Temperature")
-
-            subplot(2,2,3);
-            surf(p')
-            colorbar
-            xlabel('x')
-            ylabel('y')
-            zlabel('Pressure')
-            title("Pressure")
-        
-            drawnow
+%             figure(1)
+%             subplot(2,2,1);
+%             quiver(x(2:5:end)',y(2:5:end)',u(2:5:end, 2:5:end)',v(2:5:end, 2:5:end)', 2);
+%             xlabel('x')
+%             ylabel('y')
+%             title('velocity')
+%             xlim([0 XMAX])
+%             ylim([0 YMAX])
+% 
+%             subplot(2,2,2);
+%             contour(x', y', real(T'), 10) %,'ShowText','on')
+%             surf(T')
+%             colorbar
+%             xlabel('x')
+%             ylabel('y')
+%             zlabel('Temp')
+%             title("Temperature")
+% 
+%             subplot(2,2,3);
+%             contour(x', y', p', 10) %,'ShowText','on')
+%             surf(p')
+%             colorbar
+%             xlabel('x')
+%             ylabel('y')
+%             zlabel('Pressure')
+%             title("Pressure")
+%         
+%             drawnow
         %end 
         
         % begin:storeresults()
@@ -251,6 +251,32 @@ fclose(velv);
 % end output()
 
 %% Post processing
+    figure(1)
+            subplot(2,2,1);
+            quiver(x(2:5:end)',y(2:5:end)',u(2:5:end, 2:5:end)',v(2:5:end, 2:5:end)', 2);
+            xlabel('x')
+            ylabel('y')
+            title('velocity')
+            xlim([0 XMAX])
+            ylim([0 YMAX])
+
+            subplot(2,2,2);
+            contour(x', y', real(T'), 10) %,'ShowText','on')
+%             surf(T')
+            colorbar
+            xlabel('x')
+            ylabel('y')
+            zlabel('Temp')
+            title("Temperature")
+
+            subplot(2,2,3);
+            contour(x', y', p', 10) %,'ShowText','on')
+%             surf(p')
+            colorbar
+            xlabel('x')
+            ylabel('y')
+            zlabel('Pressure')
+            title("Pressure")
 % figure
 % surf(T')
 % colorbar

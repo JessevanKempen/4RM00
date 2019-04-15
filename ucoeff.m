@@ -44,35 +44,24 @@ for I = Istart:Iend
         Ds = 0.25*(mueff(I-1,J) + mueff(I,J) + mueff(I-1,J-1) + mueff(I,J-1))/(y(J) - y(J-1))*AREAs;
         Dn = 0.25*(mueff(I-1,J+1) + mueff(I,J+1) + mueff(I-1,J) + mueff(I,J))/(y(J+1) - y(J))*AREAn;
         
-        % The source terms
         mus = 0.25*(mueff(I-1,J) + mueff(I,J) + mueff(I-1,J-1) + mueff(I,J-1));
         mun = 0.25*(mueff(I-1,J+1) + mueff(I,J+1) + mueff(I-1,J) + mueff(I,J));
-        
-        % u can be fixed to zero by setting SP to a very large value
-%         if (I > 2+ceil(NPI/4) && I < 2+3*ceil(NPI/4) && J > 1+4*ceil(NPJ/5))
-%             SP(i,J) = -LARGE;
-            
-%         if I > ceil((NPI/2)-5) && I < ceil((NPI/2)+5) && ...
-%                 J > ceil((NPJ/4)-3) && J < ceil((NPJ/4)+3)
-%             SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *Acell;
 
-        % horizontal velocity of pan at outlet fixed to zero
-%         if (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J > 2+4*ceil(NPJ/5))
-%             SP(i,J) = -LARGE;
-%             Su(i,J) = 0.;
-            
-        % Hot wood source
-        if  I > 2 && I < wood_I && ...
-                J > inlet_J && J < wood_J
-				SP(i,J) = -LARGE;
-				Su(i,J) = 0.;
-                        
-        elseif J == 2 || I == NPJ+1 || (I == 3 && J > ceil(NPJ/3+1))%grenslagen voor de muur turbulent/laminar
+        %% The source terms
+        % Wood block
+%         if  I > 2 && I < wood_I && ...
+%                 J > inlet_J && J < wood_J
+% 				SP(i,J) = -LARGE;
+% 				Su(i,J) = LARGE*0.5;
+        
+        % Horizontal wall bottom, Vertical wall right, Vertical wall left
+        if J == 2 || I == NPJ+1 || (I == 3 && J > wood_J)
             if yplus(I,J) < 11.63
-                SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);           %dit checken in reader
+                SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);        
             else
                 SP(i,J) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *Acell;
             end
+            
         else  
             SP(i,J) = 0.;
         end
@@ -82,22 +71,25 @@ for I = Istart:Iend
             2./3. * (rho(I,J)*k(I,J) - rho(I-1,J)*k(I-1,J))/(x(I) - x(I-1));
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
-        % The coefficients (hybrid differencing scheme)     
+        %% The coefficients (hybrid differencing scheme)     
         aN(i,J) = max([-Fn, Dn - Fn/2, 0.]);
         
-        if J==2                                     %Bottom                                   
+        % Bottom wall
+        if J==2                                                                        
             aS(i,J) = 0.;
         else
             aS(i,J) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if i == 2 && J > inlet_J                    %Left
+        % Left wall
+        if i == 2 && J > inlet_J                    
             aW(i,J) = 0.;
         else
             aW(i,J) = max([ Fw, Dw + Fw/2, 0.]);
         end
 
-        if i ==NPJ+1                                %Right
+        % Right wall
+        if i ==NPJ+1                                
             aE(i,J) = 0.;
         else
             aE(i,J) = max([-Fe, De - Fe/2, 0.]);

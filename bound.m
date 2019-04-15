@@ -4,17 +4,13 @@ function [] = bound()
 % constants
 global NPI NPJ U_IN XMAX YMAX Cmu Ti
 % variables
-global y x u v T m_in m_out y_v x_u F_u F_v k eps Tinlet Thot inlet_J wood_J wood_I P_ATM pc 
+global y x u v T m_in m_out y_v x_u F_u F_v k eps Tinlet Thot inlet_J wood_J wood_I P_ATM p
 
 % Fixed temperature/velocity at the upper and lower wall
 % for J = 1:NPJ+2
 %           u(2,1:NPJ+2) = U_IN; % inlet (zijkanten extra op 0 zetten!)
 %     u(2,J) = U_IN*1.5*(1.-(2.*(y(J)-YMAX/2.)/YMAX)^2); % inlet
 % end
-%% specified lengths
-inlet_J = ceil((NPJ+2)*(0.08/YMAX));
-wood_J  = ceil((NPJ+2)*(0.16/YMAX));
-wood_I  = ceil((NPI+2)*(0.09/XMAX));
 
 %% left wall conditions
 u(2,2:inlet_J) = U_IN;                 % inlet uniform x velocity
@@ -37,8 +33,12 @@ T(1, wood_J+1:NPJ+2) = T(2, wood_J+1:NPJ+2);             % gradient 0 over left 
 T(1, 2:inlet_J) = Tinlet;                                % Inlet T Left wall
 T(1, inlet_J+1:wood_J) = Thot;                           % Wood continues left on boundary
 
-%% Pressure ambient
-%pc(1, 2:inlet_J) = P_ATM;                              % Inlet P is ambient pressure
+%% Pressure conditions
+%p(1, 2:inlet_J) = P_ATM;                              % Inlet P is ambient pressure
+%p(2, 2) = P_ATM;                                      % Inlet P is ambient pressure
+%p(2:NPI+1,NPJ+2) = P_ATM;
+
+
 
 % begin: globcont();
 % Purpose: Calculate mass in and out of the calculation domain to
@@ -81,6 +81,7 @@ v(2:NPI+1,NPJ+2) = v(2:NPI+1,NPJ+1)*m_in/m_out;
 
 k(2:NPI+1,NPJ+2) = k(2:NPI+1,NPJ+1);
 eps(2:NPI+1,NPJ+2) = eps(2:NPI+1,NPJ+1);
+p(2:NPI+1,NPJ+2) = p(2:NPI+1,NPJ+1);                     % pressure gradient 0 at outlet
 
 T(2:NPI+2,NPJ+2) = T(2:NPI+2,NPJ+1);
 

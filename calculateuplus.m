@@ -4,7 +4,7 @@ function [] = calculateuplus()
 % constants
 global NPI NPJ Cmu kappa ERough sigmaturb
 % variables
-global x y rho k tw yplus yplus1 yplus2 yplus3 uplus T Tplus mu u v Pee wood_J inlet_J
+global x y rho k tw yplus yplus1 yplus2 yplus3 yplus4 uplus T Tplus mu u v Pee wood_I wood_J inlet_J
 
 viscosity();
 
@@ -15,7 +15,7 @@ for I = 1:NPI+1
         yplus1(I,2)  = sqrt(rho(I,2)*abs(tw(I,2)))*(y(2)-y(1))/mu(I,2);
         yplus(I,2)   = yplus1(I,2);
         uplus(I,2)   = yplus(I,2);
-        %Tplus(I,2)   = T(I,2);
+        Tplus(I,2)   = T(I,2);
     else
         tw(I,2)      = rho(I,2)*Cmu^0.25*sqrt(k(I,2))*0.5*(u(i,2)+u(i+1,2))/uplus(I,2);
         yplus1(I,2)  = sqrt(rho(I,2)*abs(tw(I,2)))*(y(2)-y(1))/mu(I,2);
@@ -25,7 +25,7 @@ for I = 1:NPI+1
     end
 end
 
-for I = 1:NPI+2
+for I = 1:NPI+1
     i = I;
     if yplus1(I,2) < 11.63
        Tplus(I,2)   = T(I,2);
@@ -41,7 +41,7 @@ for J = wood_J+1:NPJ+1
         yplus2(2,J)  = sqrt(rho(2,J)*abs(tw(2,J)))*(x(2)-x(1))/mu(2,J);
         yplus(2,J)   = yplus2(2,J);
         uplus(2,J)   = yplus(2,J);
-        %Tplus(2,J)   = T(2,J);
+        Tplus(2,J)   = T(2,J);
     else
         tw(2,J)      = rho(2,J)*Cmu^0.25*sqrt(k(2,J))*0.5*(v(2,j)+v(2,j+1))/uplus(2,J);
         yplus2(2,J)  = sqrt(rho(2,J)*abs(tw(2,J)))*(x(2)-x(1))/mu(2,J);
@@ -60,14 +60,14 @@ for J = wood_J+1:NPJ+2
     end    
 end
 
-for J = 1:NPJ+1
+for J = 2:NPJ+1
     j = J;
     if yplus3(NPI+1,J) < 11.63          
         tw(NPI+1,J)      = mu(NPI+1,J)*0.5*(v(NPI+1,j)+v(NPI+1,j+1))/(x(NPI+2)-x(NPI+1));
         yplus3(NPI+1,J)  = sqrt(rho(NPI+1,J)*abs(tw(NPI+1,J)))*(x(NPI+2)-x(NPI+1))/mu(NPI+1,J);
         yplus(NPI+1,J)   = yplus3(NPI+1,J);
         uplus(NPI+1,J)   = yplus(NPI+1,J);
-        %Tplus(NPI+1,J)   = T(NPI+1,J);
+        Tplus(NPI+1,J)   = T(NPI+1,J);
     else
         tw(NPI+1,J)      = rho(NPI+1,J)*Cmu^0.25*sqrt(k(NPI+1,J))*0.5*(v(NPI+1,j)+v(NPI+1,j+1))/uplus(NPI+1,J);
         yplus3(NPI+1,J)  = sqrt(rho(NPI+1,J)*abs(tw(NPI+1,J)))*(x(NPI+2)-x(NPI+1))/mu(NPI+1,J);
@@ -77,7 +77,7 @@ for J = 1:NPJ+1
     end 
 end 
 
-for J = 1:NPJ+2
+for J = 2:NPJ+1
     j = J;
     if yplus3(NPI+1,J) < 11.63
        Tplus(NPI+1,J)   = T(NPI+1,J);
@@ -86,5 +86,30 @@ for J = 1:NPJ+2
     end
 end
         
+for J = inlet_J+1:wood_J
+    j = J;
+    if yplus4(wood_I+1,J) < 11.63          
+        tw(wood_I+1,J)      = mu(wood_I+1,J)*0.5*(v(wood_I+1,j)+v(wood_I+1,j+1))/(x(wood_I+1)-x(wood_I));
+        yplus4(wood_I+1,J)  = sqrt(rho(wood_I+1,J)*abs(tw(wood_I+1,J)))*(x(wood_I+2)-x(wood_I))/mu(wood_I+1,J);
+        yplus(wood_I+1,J)   = yplus4(wood_I+1,J);
+        uplus(wood_I+1,J)   = yplus(wood_I+1,J);
+        Tplus(NPI+1,J)   = T(NPI+1,J);
+    else
+        tw(wood_I+1,J)      = rho(wood_I+1,J)*Cmu^0.25*sqrt(k(wood_I+1,J))*0.5*(v(wood_I+1,j)+v(wood_I+1,j+1))/uplus(wood_I+1,J);
+        yplus4(wood_I+1,J)  = sqrt(rho(wood_I+1,J)*abs(tw(wood_I+1,J)))*(x(wood_I+1)-x(wood_I))/mu(wood_I+1,J);
+        yplus(wood_I+1,J)   = yplus4(wood_I+1,J);
+        uplus(wood_I+1,J)   = log(ERough*yplus(wood_I+1,J))/kappa;
+        Tplus(wood_I+1,J)   = sigmaturb(wood_I+1,J) * (uplus(wood_I+1,J) + Pee(wood_I+1,J));
+    end 
+end 
+% 
+% for J = 2:NPJ+2
+%     j = J;
+%     if yplus4(NPI+1,J) < 11.63
+%        Tplus(NPI+1,J)   = T(NPI+1,J);
+%     else
+%        Tplus(NPI+1,J)   = sigmaturb(NPI+1,J) * (uplus(NPI+1,J) + Pee(NPI+1,J)); 
+%     end
+% end
+        
 end
-
