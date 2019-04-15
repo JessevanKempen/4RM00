@@ -4,7 +4,7 @@ function [] = bound()
 % constants
 global NPI NPJ U_IN XMAX YMAX Cmu Ti
 % variables
-global y x u v T m_in m_out y_v x_u F_u F_v k eps Tinlet Thot inlet_J wood_J wood_I
+global y x u v T m_in m_out y_v x_u F_u F_v k eps Tinlet Thot inlet_J wood_J wood_I P_ATM pc 
 
 % Fixed temperature/velocity at the upper and lower wall
 % for J = 1:NPJ+2
@@ -36,6 +36,9 @@ T(1, wood_J+1:NPJ+2) = T(2, wood_J+1:NPJ+2);             % gradient 0 over left 
 
 T(1, 2:inlet_J) = Tinlet;                                % Inlet T Left wall
 T(1, inlet_J+1:wood_J) = Thot;                           % Wood continues left on boundary
+
+%% Pressure ambient
+%pc(1, 2:inlet_J) = P_ATM;                              % Inlet P is ambient pressure
 
 % begin: globcont();
 % Purpose: Calculate mass in and out of the calculation domain to

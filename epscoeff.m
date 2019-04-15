@@ -56,7 +56,7 @@ for I = Istart:Iend
         % Hot wood source is source term for turbulence (eq. 9.23)
         elseif I < wood_I && J > inlet_J && J < wood_J
             SP(I,J) = -LARGE;
-            Su(I,J) = LARGE;
+            Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
 
          else
             SP(I,J) = -C2eps*rho(I,J)*eps(I,J)/(k(I,J) + SMALL);

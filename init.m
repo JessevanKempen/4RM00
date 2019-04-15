@@ -2,11 +2,11 @@ function [] = init()
 % Purpose: To initilise all parameters.
 
 % constants
-global NPI NPJ LARGE U_IN XMAX YMAX
+global NPI NPJ LARGE U_IN XMAX YMAX R g
 % variables
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
     yplus2 yplus3 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
-    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old ...
+    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old rho_old ...
     eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee Dx Dt COURANT
 
 %% begin: memalloc()
@@ -21,6 +21,7 @@ v   = zeros(NPI+2,NPJ+2);
 pc  = zeros(NPI+2,NPJ+2);
 p   = zeros(NPI+2,NPJ+2);
 T   = zeros(NPI+2,NPJ+2);
+R   = zeros(NPI+2,NPJ+2);
 rho = zeros(NPI+2,NPJ+2);
 mu  = zeros(NPI+2,NPJ+2);
 mut  = zeros(NPI+2,NPJ+2);
@@ -47,6 +48,7 @@ u_old  = zeros(NPI+2,NPJ+2);
 v_old  = zeros(NPI+2,NPJ+2);
 p_old = zeros(NPI+2,NPJ+2);
 pc_old = zeros(NPI+2,NPJ+2);
+rho_old = zeros(NPI+2,NPJ+2);
 T_old  = zeros(NPI+2,NPJ+2);
 k_old  = zeros(NPI+2,NPJ+2);
 eps_old  = zeros(NPI+2,NPJ+2);
@@ -133,11 +135,11 @@ for i = 1: NPI+2
     end
 end
 
-
 rho(:,:)   = 1.0;      % Density
 v(:,:)     = 0.1;      % Velocity in y-direction
 p(:,:)     = 0.;       % Relative pressure
 T(:,:)     = 273.;     % Temperature
+R(:,:)     = 287.0856; % Specific gas constant air
 mu(:,:)    = 2.E-5;    % Viscosity
 Cp(:,:)    = 1013.;    % J/(K*kg) Heat capacity - assumed constant for this problem
 Gamma = 0.025./Cp;     % Thermal conductivity divided by heat capacity
@@ -153,10 +155,11 @@ yplus(:,:) = 1.;       % yplus
 Tplus(:,:) = 1.;       % Tplus
 tw(:,:)    = 5.;       % tw
 Pee(:,:) = 9.24.*( (sigmalam ./ sigmaturb).^0.75 - 1) .* (1 + 0.28.*exp(-0.007.*(sigmalam ./ sigmaturb)));
-
+g = 9.81;              % Gravity constant
 
 u_old  = u;  % Velocity in x-direction old timestep
 v_old  = v;  % Velocity in y-direction old timestep
+rho_old = rho % Rho correction old timestep
 pc_old = pc; % Pressure correction old timestep
 T_old  = T;  % Temperature old timestep
 eps_old = eps; % epsilon old timestep

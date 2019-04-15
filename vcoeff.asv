@@ -54,8 +54,7 @@ for I = Istart:Iend
 %             Su(i,J) = 0.;
         
          % Hot wood source
-        if  I > 2 && I < wood_I && ...
-            J > inlet_J && J < wood_J
+        if  I > 2 && I < wood_I && J > inlet_J && J < wood_J
 				SP(i,J) = -LARGE;
 				Su(i,J) = 0.;
             
@@ -66,6 +65,7 @@ for I = Istart:Iend
             else
                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;   
             end
+        else 
             SP(I,j) = 0.;
         end        
             

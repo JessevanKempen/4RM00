@@ -16,10 +16,10 @@ close all
 clc
 %% declare all variables and contants
 % variables
-global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
-    u_old v_old pc_old p_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 yplus3 Thot Tinlet Tplus wood_J wood_I inlet_I
+global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k P_ATM ...
+    u_old v_old pc_old p_old rho_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 yplus3 Thot Tinlet Tplus wood_J wood_I inlet_J
 % constants
-global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx
+global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx g R
 
 NPI        = 40;        % number of grid cells in x-direction [-]
 NPJ        = 80;        % number of grid cells in y-direction [-]
@@ -37,11 +37,11 @@ SAVGneeded = 1E-5;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 5  ;       % in flow velocity [m/s]
+U_IN       = 1  ;       % in flow velocity [m/s]
 
 Tinlet     = 293.;       % Inlet temperature air [K]
 Thot       = 850.;       % Wood temperature [K]
-
+       
 Cmu        = 0.09;
 sigmak     = 1.;
 sigmaeps   = 1.3;
@@ -52,7 +52,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.001;
-TOTAL_TIME = 3;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+TOTAL_TIME = 0.3;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% start main function here
 
@@ -103,8 +103,9 @@ for time = Dt:Dt:TOTAL_TIME
             T = solve(T, b, aE, aW, aN, aS, aP);
         end
         
+        density();
         viscosity();
-        bound();
+        bound();                  
         
         %% dynamic plot of velocity  
         %if iter > 0 (manier vinden om per iteratie 1 maal te plotten)
@@ -127,7 +128,8 @@ for time = Dt:Dt:TOTAL_TIME
             title("Temperature")
 
             subplot(2,2,3);
-            surf(p')
+            contour(x', y', p', 10) %,'ShowText','on')
+            %surf(p')
             colorbar
             xlabel('x')
             ylabel('y')
@@ -146,6 +148,7 @@ for time = Dt:Dt:TOTAL_TIME
         v_old(2:NPI+1,3:NPJ+1)   = v(2:NPI+1,3:NPJ+1);        
         pc_old(2:NPI+1,2:NPJ+1)  = pc(2:NPI+1,2:NPJ+1);
         p_old(2:NPI+1,2:NPJ+1)   = p(2:NPI+1,2:NPJ+1);
+        rho_old(2:NPI+1,2:NPJ+1) = rho(2:NPI+1,2:NPJ+1);
         T_old(2:NPI+1,2:NPJ+1)   = T(2:NPI+1,2:NPJ+1);        
         eps_old(2:NPI+1,2:NPJ+1) = eps(2:NPI+1,2:NPJ+1);
         k_old(2:NPI+1,2:NPJ+1)   = k(2:NPI+1,2:NPJ+1);

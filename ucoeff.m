@@ -91,7 +91,7 @@ for I = Istart:Iend
             aS(i,J) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if i == 2 && J > ceil(NPJ/3+1)              %Left
+        if i == 2 && J > inlet_J                    %Left
             aW(i,J) = 0.;
         else
             aW(i,J) = max([ Fw, Dw + Fw/2, 0.]);

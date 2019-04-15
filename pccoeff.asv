@@ -35,22 +35,25 @@ for I = Istart:Iend
         
         SP(I,J) = 0.;
         Su(I,J) = 0.;
-                
+        
+        % Hot wood source is source term for turbulence (eq. 9.23)
+%         if I < wood_I && J > inlet_J && J < wood_J+1
+%             SP(I,J) = LARGE;
+%             Su(I,J) = 0;
+%         else    
+            SP(I,J) = 0.;
+            Su(I,J) = 0.;
+%         end
+        
         b(I,J) = b(I,J) + Su(I,J);
         
         SMAX = max([SMAX,abs(b(I,J))]);
         SSUM = SSUM + abs(b(I,J));
-
-        % Hot wood source is source term for turbulence (eq. 9.23)
-        if I < wood_I && J > inlet_J && J < wood_J+1
-            SP(I,J) = -LARGE;
-            Su(I,J) = 0;
-        end
         
         % The coefficients
         aN(I,J) = 0.5*(rho(I,J) + rho(I,J+1))*d_v(I,j+1)*AREAn;
         
-        if J == 2                                   % bottom supress                             
+        if j==3                                     % (checken of 3 niet 2 is)                                   
             aS(I,j) = 0.;
         else
             aS(I,J) = 0.5*(rho(I,J-1) + rho(I,J))*d_v(I,j)*AREAs;

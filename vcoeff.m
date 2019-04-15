@@ -2,7 +2,7 @@ function [] = vcoeff()
 % Purpose: To calculate the coefficients for the v equation.
 
 % constants
-global NPI NPJ Dt Cmu
+global NPI NPJ Dt Cmu g
 % variables
 global x x_u y y_v v p mu mueff SP Su F_u F_v d_v relax_v v_old rho Istart Iend ...
     Jstart Jend b aE aW aN aS aP dvdy dudy k LARGE yplus uplus wood_J wood_I inlet_J
@@ -65,13 +65,14 @@ for I = Istart:Iend
             else
                 SP(I,j) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;   
             end
+        else 
             SP(I,j) = 0.;
         end        
             
         Su(I,j) = (mueff(I,J)*dvdy(I,J) - mueff(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i)) - ...
             2./3. * (rho(I,J)*k(I,J) - rho(I,J-1)*k(I,J-1))/(y(J) - y(J-1));
-        Su(i,J) =  Su(i,J)*AREAw*AREAs;
+        Su(i,J) =  Su(i,J)*AREAw*AREAs - rho(i,J).*g*(AREAw*AREAs)^2;
         
         % The coefficients (hybrid differencing scheme)
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);
