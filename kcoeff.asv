@@ -5,7 +5,7 @@ function [] = kcoeff()
 global NPI NPJ Dt Cmu sigmak
 % variables
 global x x_u y y_v SP Su F_u F_v mut rho u uplus tw Istart Iend ...
-    Jstart Jend b aE aW aN aS aP k k_old eps E2 LARGE wood_J wood_I inlet_J
+    Jstart Jend b aE aW aN aS aP k k_old eps E2 LARGE wood_J wood_I inlet_J pan_J pan_I
 
 
 Istart = 2;
@@ -50,14 +50,14 @@ for I = Istart:Iend
 
         %% The source terms
         % Horizontal wall bottom, Vertical wall right, Vertical wall left
-        if J == 2 || I == NPJ+1 || (I == 2 && J > wood_J) 
+        if J == 2 || I == NPJ+1 || (I == 2 && J > wood_J)  
              SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
              Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
               
         % Wood block
         elseif I < wood_I && J > inlet_J && J < wood_J
              SP(I,J) = -LARGE;
-             Su(I,J) = LARGE;
+             Su(I,J) = 0;
              
         else
             SP(I,J) = -rho(I,J)*eps(I,J)/k(I,J);

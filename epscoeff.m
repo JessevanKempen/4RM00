@@ -5,7 +5,7 @@ function [] = epscoeff()
 global NPI NPJ Dt Cmu LARGE SMALL sigmaeps kappa C1eps C2eps
 % variables
 global x x_u y y_v SP Su F_u F_v mut rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP k eps E2 eps_old uplus wood_I wood_J inlet_J
+    Jstart Jend b aE aW aN aS aP k eps E2 eps_old uplus wood_I wood_J inlet_J pan_J pan_I
 
 
 Istart = 2;
@@ -52,7 +52,12 @@ for I = Istart:Iend
         if J == 2 || I == NPJ+1 || (I == 2 && J > wood_J)
            SP(I,J) = -LARGE;
            Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
-                
+
+        % Pan
+%         elseif I > pan_I(1)-1 && I < pan_I(2)+1 && J == pan_J(1)-1
+%            SP(I,J) = -LARGE;
+%            Su(I,J) = Cmu^0.75*k(I,J)^1.5/(kappa*0.5*AREAw)*LARGE;
+             
         % Wood block
         elseif I < wood_I && J > inlet_J && J < wood_J
             SP(I,J) = -LARGE;

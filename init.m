@@ -174,7 +174,7 @@ relax_u   = 0.7;            % See eq. 6.36
 relax_v   = relax_u;        % See eq. 6.37
 relax_pc  = 1.1 - relax_u;  % See eq. 6.33
 relax_T   = 0.7;            % Relaxation factor for temperature
-relax_rho = 1;              % Relaxation factor for rho
+relax_rho = 0;              % Relaxation factor for rho
 
 % end of initilization
 end
