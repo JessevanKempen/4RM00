@@ -5,7 +5,7 @@ function [] = vcoeff()
 global NPI NPJ Dt Cmu g
 % variables
 global x x_u y y_v v p mu mueff SP Su F_u F_v d_v relax_v v_old rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP dvdy dudy k LARGE yplus uplus wood_J wood_I inlet_J
+    Jstart Jend b aE aW aN aS aP dvdy dudy k LARGE yplus uplus wood_J wood_I inlet_J pan_I pan_J
 
 
 
@@ -48,10 +48,15 @@ for I = Istart:Iend
         
         %% The source terms
          % Hot wood source
-        if I > 2 && I < wood_I && J > inlet_J && J < wood_J
+        if I < wood_I && J > inlet_J && J < wood_J
 				SP(i,J) = -LARGE;
 				Su(i,J) = 0.;
-            
+        
+        % Pan      
+        elseif I > pan_I(1)-1 && I < pan_I(2)+1 && J > pan_J(1)-1 && J < pan_J(2)+1
+                SP(i,J) = -LARGE;
+				Su(i,J) = 0.;
+
         % Horizontal wall bottom, Vertical wall right, Vertical wall left  
         elseif J == 3 || I == NPJ+1 || (I == 2 && J > wood_J)
             if yplus(I,J) < 11.63
@@ -67,7 +72,7 @@ for I = Istart:Iend
         Su(I,j) = (mueff(I,J)*dvdy(I,J) - mueff(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i)) - ...
             2./3. * (rho(I,J)*k(I,J) - rho(I,J-1)*k(I,J-1))/(y(J) - y(J-1));
-        Su(i,J) =  Su(i,J)*AREAw*AREAs - rho(i,J).*g*(AREAw*AREAs)^2;
+        Su(i,J) =  Su(i,J)*AREAw*AREAs - rho(i,J).*g*(AREAw*AREAs);
         
         %% The coefficients (hybrid differencing scheme)
         aN(I,j) = max([-Fn, Dn - Fn/2, 0.]);

@@ -16,19 +16,19 @@ close all
 clc
 %% declare all variables and contants
 % variables
-global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k P_ATM ...
+global x x_u y y_v u v pc p T rho mu Gamma b SMAX SAVG aP aE aW aN aS eps k P_ATM pan_I pan_J p_abs ...
     u_old v_old pc_old p_old rho_old T_old Dt eps_old k_old uplus yplus yplus1 yplus2 yplus3 Thot Tinlet Tplus wood_J wood_I inlet_J
 % constants
-global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx Dy g R
+global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cmu sigmak sigmaeps sigmaturb C1eps C2eps kappa ERough Ti Dx Dy g R relax_rho
 
-NPI        = 50;        % number of grid cells in x-direction [-]
-NPJ        = 100;        % number of grid cells in y-direction [-]
-XMAX       = 0.18;       % width of the domain [m]
-YMAX       = 0.455;      % height of the domain [m]
-MAX_ITER   = 20;       % maximum number of outer iterations [-]
+NPI        = 36;                         % number of grid cells in x-direction [-]
+XMAX       = 0.18;                       % width of the domain [m]
+YMAX       = 0.8;                        % height of the domain [m]
+NPJ        = YMAX/(XMAX/NPI);            % number of grid cells in y-direction [-]
+MAX_ITER   = 20;        % maximum number of outer iterations [-]
 U_ITER     = 1;         % number of Newton iterations for u equation [-]
 V_ITER     = 1;         % number of Newton iterations for v equation [-]
-PC_ITER    = 30;       % number of Newton iterations for pc equation [-]
+PC_ITER    = 30;        % number of Newton iterations for pc equation [-]
 T_ITER     = 1;         % number of Newton iterations for T equation [-]
 EPS_ITER   = 1;         % number of Newton iterations for Eps equation [-]
 K_ITER     = 1;         % number of Newton iterations for K equation [-]
@@ -37,10 +37,10 @@ SAVGneeded = 1E-5;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 0.5  ;     % in flow velocity [m/s]
+U_IN       = 1.2  ;     % in flow velocity [m/s]
 
-Tinlet     = 293.;       % Inlet temperature air [K]
-Thot       = 850.;       % Wood temperature [K]
+Tinlet     = 293.;      % Inlet temperature air [K]
+Thot       = 850.;      % Wood temperature [K]
        
 Cmu        = 0.09;
 sigmak     = 1.;
@@ -51,13 +51,17 @@ kappa      = 0.4187;
 ERough     = 9.793;
 Ti         = 0.04;
 
-Dt         = 0.001;
-TOTAL_TIME = 1;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
+Dt         = 0.004;
+TOTAL_TIME = 0.1;       %eerst checken of je eerste iteratie klopt, dan grotere timestep
 
 %% specified lengths
 inlet_J = ceil((NPJ+2)*(0.08/YMAX));
 wood_J  = ceil((NPJ+2)*(0.16/YMAX));
 wood_I  = ceil((NPI+2)*(0.09/XMAX));
+pan_I(1) = ceil((NPI+2)*(0.045/XMAX));
+pan_I(2) = ceil((NPI+2)*(0.135/XMAX));
+pan_J(2) = ceil((NPJ+2)*(0.5/YMAX));
+pan_J(1) = pan_J(2)-5;
 
 %% start main function here
 
@@ -93,6 +97,12 @@ for time = Dt:Dt:TOTAL_TIME
         
         velcorr(); % Correct pressure and velocity
         
+        if abs(p(:,:)) < 0.01
+           p_abs(:,:) = p(:,:);               
+        else 
+            p_abs(:,:) = P_ATM + p(:,:);   
+        end
+   
         kcoeff();
         for iter_k = 1:K_ITER
             k = solve(k, b, aE, aW, aN, aS, aP);
@@ -107,7 +117,7 @@ for time = Dt:Dt:TOTAL_TIME
         for iter_T = 1:T_ITER
             T = solve(T, b, aE, aW, aN, aS, aP);
         end
-        
+               
         density();
         viscosity();
         bound();                  
@@ -142,7 +152,7 @@ for time = Dt:Dt:TOTAL_TIME
 %             title("Pressure")
 %         
 %             drawnow
-        %end 
+       % end 
         
         % begin:storeresults()
         % Store data at current time level in arrays for "old" data
@@ -266,7 +276,7 @@ fclose(velv);
             ylim([0 YMAX])
 
             subplot(2,2,2);
-            contour(x', y', real(T'), 10) %,'ShowText','on')
+            contour(x', y', T', 10) %,'ShowText','on')
 %             surf(T')
             colorbar
             xlabel('x')

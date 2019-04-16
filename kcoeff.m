@@ -57,7 +57,7 @@ for I = Istart:Iend
         % Wood block
         elseif I < wood_I && J > inlet_J && J < wood_J
              SP(I,J) = -LARGE;
-             Su(I,J) = LARGE;
+             Su(I,J) = 0;
              
         else
             SP(I,J) = -rho(I,J)*eps(I,J)/k(I,J);

@@ -5,9 +5,9 @@ function [] = init()
 global NPI NPJ LARGE U_IN XMAX YMAX R g
 % variables
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
-    yplus2 yplus3 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
-    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old rho_old ...
-    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee Dx Dy Dt COURANT
+    yplus2 yplus3 yplus4 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
+    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old rho_old relax_rho ...
+    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee Dx Dy Dt COURANT wood_I wood_J P_ATM p_abs
 
 %% begin: memalloc()
 % allocate memory for variables
@@ -37,12 +37,14 @@ yplus  = zeros(NPI+2,NPJ+2);
 yplus1  = zeros(NPI+2,NPJ+2);
 yplus2  = zeros(NPI+2,NPJ+2);
 yplus3  = zeros(NPI+2,NPJ+2);
+yplus4  = zeros(NPI+2,NPJ+2);
 uplus  = zeros(NPI+2,NPJ+2);
 Tplus = zeros(NPI+2,NPJ+2);
 tw  = zeros(NPI+2,NPJ+2);
 sigmaturb = zeros(NPI+2,NPJ+2);
 sigmalam = zeros(NPI+2,NPJ+2);
 Pee = zeros(NPI+2,NPJ+2);
+p_abs = zeros(NPI+2,NPJ+2);
 
 u_old  = zeros(NPI+2,NPJ+2);
 v_old  = zeros(NPI+2,NPJ+2);
@@ -137,7 +139,8 @@ end
 
 rho(:,:)   = 1.0;      % Density
 v(:,:)     = 0.1;      % Velocity in y-direction
-p(:,:)     = 0.;       % Relative pressure
+p(:,:)     = 0;        % Relative pressure
+p_abs(:,:) = P_ATM + p(:,:); % Absolute pressure 
 T(:,:)     = 273.;     % Temperature
 R(:,:)     = 287.0856; % Specific gas constant air
 mu(:,:)    = 2.E-5;    % Viscosity
@@ -151,6 +154,7 @@ uplus(:,:) = 1.;       % uplus
 yplus1(:,:)= sqrt(rho .* u ./ mu) * (y(2) - y(1));   % yplus1
 yplus2(:,:)= sqrt(rho .* v ./ mu) * (x(2) - x(1));   % yplus2
 yplus3(:,:)= sqrt(rho .* v ./ mu) * (x(NPI+1) - x(NPI));  % yplus3
+yplus4(:,:)= sqrt(rho .* v ./ mu) * (x(wood_I+1) - x(wood_I));  % yplus4
 yplus(:,:) = 1.;       % yplus
 Tplus(:,:) = 1.;       % Tplus
 tw(:,:)    = 5.;       % tw
@@ -169,7 +173,8 @@ k_old  = k;   % k old timestep
 relax_u   = 0.7;            % See eq. 6.36
 relax_v   = relax_u;        % See eq. 6.37
 relax_pc  = 1.1 - relax_u;  % See eq. 6.33
-relax_T   = 1.0;            % Relaxation factor for temperature
+relax_T   = 0.7;            % Relaxation factor for temperature
+relax_rho = 0.9;            % Relaxation factor for rho
 
 % end of initilization
 end

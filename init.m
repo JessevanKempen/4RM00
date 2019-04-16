@@ -6,8 +6,8 @@ global NPI NPJ LARGE U_IN XMAX YMAX R g
 % variables
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
     yplus2 yplus3 yplus4 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
-    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old rho_old ...
-    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee Dx Dy Dt COURANT wood_I wood_J 
+    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old p_old pc_old T_old k_old rho_old relax_rho ...
+    eps_old dudx dudy dvdx dvdy Twall Tplus sigmaturb sigmalam Pee Dx Dy Dt COURANT wood_I wood_J P_ATM p_abs
 
 %% begin: memalloc()
 % allocate memory for variables
@@ -44,6 +44,7 @@ tw  = zeros(NPI+2,NPJ+2);
 sigmaturb = zeros(NPI+2,NPJ+2);
 sigmalam = zeros(NPI+2,NPJ+2);
 Pee = zeros(NPI+2,NPJ+2);
+p_abs = zeros(NPI+2,NPJ+2);
 
 u_old  = zeros(NPI+2,NPJ+2);
 v_old  = zeros(NPI+2,NPJ+2);
@@ -138,7 +139,8 @@ end
 
 rho(:,:)   = 1.0;      % Density
 v(:,:)     = 0.1;      % Velocity in y-direction
-p(:,:)     = 0.;       % Relative pressure
+p(:,:)     = 0;        % Relative pressure
+p_abs(:,:) = P_ATM + p(:,:); % Absolute pressure 
 T(:,:)     = 273.;     % Temperature
 R(:,:)     = 287.0856; % Specific gas constant air
 mu(:,:)    = 2.E-5;    % Viscosity
@@ -172,6 +174,7 @@ relax_u   = 0.7;            % See eq. 6.36
 relax_v   = relax_u;        % See eq. 6.37
 relax_pc  = 1.1 - relax_u;  % See eq. 6.33
 relax_T   = 0.7;            % Relaxation factor for temperature
+relax_rho = 1;              % Relaxation factor for rho
 
 % end of initilization
 end

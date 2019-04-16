@@ -6,7 +6,7 @@ function [] = ucoeff()
 global NPI NPJ Dt Cmu
 % variables
 global x x_u y y_v u p mu mueff SP Su F_u F_v d_u relax_u u_old rho Istart Iend ...
-    Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx LARGE wood_I wood_J inlet_J
+    Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx LARGE wood_I wood_J inlet_J pan_I pan_J
 
 
 
@@ -49,13 +49,17 @@ for I = Istart:Iend
 
         %% The source terms
         % Wood block
-%         if  I > 2 && I < wood_I && ...
-%                 J > inlet_J && J < wood_J
-% 				SP(i,J) = -LARGE;
-% 				Su(i,J) = LARGE*0.5;
+        if  I < wood_I && J > inlet_J && J < wood_J
+				SP(i,J) = -LARGE;
+				Su(i,J) = LARGE*0;
+                
+        % Pan      
+        elseif I > pan_I(1)-1 && I < pan_I(2)+1 && J > pan_J(1)-1 && J < pan_J(2)+1
+                SP(i,J) = -LARGE;
+				Su(i,J) = 0.;
         
         % Horizontal wall bottom, Vertical wall right, Vertical wall left
-        if J == 2 || I == NPJ+1 || (I == 3 && J > wood_J)
+        elseif J == 2 || I == NPJ+1 || (I == 3 && J > wood_J)
             if yplus(I,J) < 11.63
                 SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);        
             else

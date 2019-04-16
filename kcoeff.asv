@@ -47,46 +47,45 @@ for I = Istart:Iend
             mut(I,J)*(y_v(j)-y(J-1)))*AREAs;
         Dn = mut(I,J)*mut(I,J+1)/sigmak/(mut(I,J)*(y(J+1) - y_v(j+1)) + ...
             mut(I,J+1)*(y_v(j+1)-y(J)))*AREAn;
-        
-        % The source terms
-%         if I== 2 || J== NPJ+1 || (J == 2 && I > ceil(NPJ/3+1))
-%             SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
-%             Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
 
-        % Hot wood source is source term for turbulence (eq. 9.23)
-         if I < wood_I && J > inlet_J && J < wood_J
-            SP(I,J) = -LARGE;
-            Su(I,J) = LARGE;
-        
-        % All near wall nodes (eq. 9.23)
-         elseif J == 2 || I == NPJ+1 || (I == 2 && J > wood_J) || I == wood_I && 
-              SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
-              Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
+        %% The source terms
+        % Horizontal wall bottom, Vertical wall right, Vertical wall left
+        if J == 2 || I == NPJ+1 || (I == 2 && J > wood_J) 
+             SP(I,J) = -rho(I,J)*Cmu^0.75*k(I,J)^0.5*uplus(I,J)/(0.5*AREAw)*AREAs*AREAw;
+             Su(I,J) = tw(I,J)*0.5*(u(i,J) + u(i+1,J))/(0.5*AREAw)*AREAs*AREAw;
+              
+        % Wood block
+        elseif I < wood_I && J > inlet_J && J < wood_J
+             SP(I,J) = -LARGE;
+             Su(I,J) = LARGE;
              
-         else
+        else
             SP(I,J) = -rho(I,J)*eps(I,J)/k(I,J);
             Su(I,J) = 2.0*mut(I,J)*E2(I,J);
-         end
+        end
         
         Su(I,J) =  Su(I,J)*AREAw*AREAs;
         SP(I,J) =  SP(I,J)*AREAw*AREAs;
         
-        % The coefficients (hybrid differencing scheme)
+        %% The coefficients (hybrid differencing scheme)
         aN(I,J) = max([-Fn, Dn - Fn/2, 0.]);
-                
-        if J==2 %|| (I > 1+ceil(NPI/4) && I < 1+3*ceil(NPI/4) && J == 1+4*ceil(NPJ/5)) %Bottom or bottom of pan                                 
+        
+        % Suppressing link at bottom wall
+        if J==2                                
             aS(I,J) = 0.;
         else
             aS(I,J) = max([ Fs, Ds + Fs/2, 0.]);
         end
         
-        if I == 2 && J > wood_J              %Left
+        % Suppressing link at left wall
+        if I == 2 && J > wood_J            
             aW(I,J) = 0.;
         else
             aW(I,J) = max([ Fw, Dw + Fw/2, 0.]);
         end
 
-        if I ==NPJ+1                                %Right
+        % Suppressing link at right wall
+        if I ==NPJ+1                           
             aE(I,J) = 0.;
         else
             aE(I,J) = max([-Fe, De - Fe/2, 0.]);
